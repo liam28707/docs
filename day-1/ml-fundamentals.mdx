@@ -42,7 +42,39 @@ To catch it, we split the data:
 - **Training set (about 80%):** the model learns from this.
 - **Testing set (about 20%):** hidden during learning, used only to grade the model on songs it has never seen.
 
-{/* ILLUSTRATION I-11: Overfitting slider. A chart with training accuracy and test accuracy lines against "model complexity". Student drags a slider; the gap between lines opens up on the right, with the label "memorising". */}
+export const OverfitDemo = () => {
+  const [depth, setDepth] = useState(3);
+  const train = (d) => 0.62 + 0.37 * (1 - Math.exp(-d / 5));
+  const test = (d) => 0.62 + 0.12 * (1 - Math.exp(-d / 2.5)) - 0.012 * Math.max(0, d - 6);
+  const x = (d) => 40 + ((d - 1) / 19) * 320;
+  const y = (a) => 170 - ((a - 0.55) / 0.5) * 150;
+  const ds = Array.from({ length: 20 }, (_, i) => i + 1);
+  const line = (f) => ds.map((d) => x(d) + "," + y(f(d))).join(" ");
+  const gap = Math.round((train(depth) - test(depth)) * 100);
+  const verdict = depth <= 3 ? "Too simple: it hasn't learned the pattern yet." : depth <= 7 ? "Sweet spot: learning real patterns." : "Memorising: great on training data, worse on new songs.";
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: how complex should the model be?</p>
+      <svg viewBox="0 0 380 200" className="w-full">
+        <line x1="40" y1="170" x2="360" y2="170" stroke="currentColor" strokeOpacity="0.3" />
+        <line x1="40" y1="20" x2="40" y2="170" stroke="currentColor" strokeOpacity="0.3" />
+        <polyline points={line(train)} fill="none" stroke="#1DB954" strokeWidth="3" />
+        <polyline points={line(test)} fill="none" stroke="#F59E0B" strokeWidth="3" />
+        <line x1={x(depth)} y1="20" x2={x(depth)} y2="170" stroke="currentColor" strokeOpacity="0.5" strokeDasharray="4" />
+        <circle cx={x(depth)} cy={y(train(depth))} r="5" fill="#1DB954" />
+        <circle cx={x(depth)} cy={y(test(depth))} r="5" fill="#F59E0B" />
+        <text x="45" y="16" fontSize="10" fill="currentColor">accuracy</text>
+        <text x="250" y="194" fontSize="10" fill="currentColor">model complexity →</text>
+      </svg>
+      <input type="range" min="1" max="20" value={depth} onChange={(e) => setDepth(Number(e.target.value))} className="w-full" />
+      <p className="m-0 text-sm"><span style={{ color: "#1DB954" }}>■</span> Training accuracy {Math.round(train(depth) * 100)}% &nbsp; <span style={{ color: "#F59E0B" }}>■</span> Test accuracy {Math.round(test(depth) * 100)}% &nbsp; Gap: {gap} points</p>
+      <p className="m-0 mt-1 font-medium">{verdict}</p>
+      <p className="m-0 mt-1 text-xs opacity-70">Illustrative curves for teaching, not real model output.</p>
+    </div>
+  );
+};
+
+<OverfitDemo />
 
 <Warning>
 A model with great training accuracy but poor testing accuracy has not learned anything useful. Always judge a model on the **test** set.
