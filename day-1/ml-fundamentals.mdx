@@ -1,0 +1,67 @@
+---
+title: "Session 4 — Machine Learning Fundamentals"
+description: "How a computer learns patterns, and how we know it learned the right ones."
+icon: "brain"
+---
+
+**Duration:** 30 minutes
+
+## What is machine learning?
+
+Normally you write rules: *if energy is above 0.8, call it a hit.* In machine learning you give the computer many **examples** with known answers and let it **find the rules itself**. The algorithm finds mathematical patterns in past data and uses them to predict new cases.
+
+## Supervised vs unsupervised
+
+- **Supervised learning:** every example comes with the right answer. *"Here are 100,000 songs and whether each went viral. Learn the link."*
+- **Unsupervised learning:** no answers given. *"Here are 100,000 songs. Group similar ones together."*
+
+<Note>
+Our workshop uses **supervised learning**, because we know each track's popularity.
+</Note>
+
+## Features and targets
+
+- **Features** are the inputs: things we know about a song before release.
+- **Target** (or **label**) is the output we want to predict.
+
+{/* ILLUSTRATION I-10: Interactive "prediction machine". Features on the left as sliders (danceability, tempo, acousticness), a box labelled "model" in the middle, and "Viral / Not viral" on the right. Moving sliders changes the output with a toy rule so students see inputs → output. */}
+
+| Role | Spotify columns |
+|---|---|
+| **Features** | `danceability`, `energy`, `loudness`, `speechiness`, `acousticness`, `instrumentalness`, `liveness`, `valence`, `tempo` |
+| **Target** | `viral` (1 = viral, 0 = not viral) |
+
+Because the target is a **category** (viral or not) rather than a number, this is a **classification** problem. If we predicted the exact popularity number, it would be **regression**.
+
+## Training vs testing, and overfitting
+
+Imagine studying for an exam by memorising last year's paper word for word. You'd score 100% on *that* paper and fail a new one. Models do the same thing, and it is called **overfitting**.
+
+To catch it, we split the data:
+
+- **Training set (about 80%):** the model learns from this.
+- **Testing set (about 20%):** hidden during learning, used only to grade the model on songs it has never seen.
+
+{/* ILLUSTRATION I-11: Overfitting slider. A chart with training accuracy and test accuracy lines against "model complexity". Student drags a slider; the gap between lines opens up on the right, with the label "memorising". */}
+
+<Warning>
+A model with great training accuracy but poor testing accuracy has not learned anything useful. Always judge a model on the **test** set.
+</Warning>
+
+## Two models
+
+### Linear / logistic regression: the line of best fit
+Draw the single straight line that best fits the points. For a yes/no target, the logistic version bends this line into a probability between 0 and 1. It is simple, fast and easy to explain, but it can only capture straight-line relationships.
+
+### Random forest: a council of decision trees
+A **decision tree** asks a chain of yes/no questions: *Is energy above 0.6? Is acousticness below 0.3?* One tree can be unreliable. A **random forest** builds hundreds of slightly different trees and lets them **vote**. The crowd is usually wiser than any one tree.
+
+{/* ILLUSTRATION I-12: Two-panel interactive. Left: scatter with a draggable line of best fit. Right: "council" of 5 small trees each voting Viral/Not viral on a song the student picks; majority wins. */}
+
+We will use a **random forest** on Day 2.
+
+<Accordion title="Check yourself">
+1. Is "predict whether a song goes viral" supervised or unsupervised? **Supervised.**
+2. Why do we hold back a test set? **To check the model works on data it hasn't seen, and catch overfitting.**
+3. Classification or regression: predicting the exact popularity number? **Regression.**
+</Accordion>

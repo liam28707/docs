@@ -1,0 +1,51 @@
+---
+title: "Session 1 — Framing"
+description: "Data careers, and the business problem we will solve."
+icon: "compass"
+---
+
+**Duration:** 10 minutes
+
+## Roadmap to data careers
+
+"Data" is not one job. Think of a data team as three groups that hand work to each other.
+
+{/* ILLUSTRATION I-02: Interactive three-lane roadmap. Hover/tap a lane to reveal daily tasks, tools and a "day in the life" line. */}
+
+<CardGroup cols={3}>
+  <Card title="Data Engineering" icon="hammer">
+    **The builders.** Build the pipes that collect, move and store data reliably. Tools: SQL, Python, cloud warehouses.
+  </Card>
+  <Card title="Data Analytics" icon="chart-column">
+    **The storytellers.** Turn data into charts and dashboards that help people decide. Tools: Power BI, Excel, SQL.
+  </Card>
+  <Card title="Data Science" icon="wand-magic-sparkles">
+    **The predictors.** Build models that forecast what happens next. Tools: Python, scikit-learn.
+  </Card>
+</CardGroup>
+
+<Tip>
+In this workshop you will do a taste of all three: clean data (engineering), build a dashboard (analytics) and train a model (science).
+</Tip>
+
+## The hook: how do labels quantify a "hit"?
+
+Every day, around 100,000 new tracks are uploaded to streaming platforms. Almost nobody hears most of them. A record label has to decide where to put its marketing money.
+
+> **Business question:** Can the *sound* of a song (how danceable, energetic or happy it is) tell us whether it is likely to become popular?
+
+Songs don't come with a "hit" label, so we need to define one. We will say a track is **viral** if its popularity score is above a threshold (you will choose it on Day 2). That turns the business problem into a yes/no prediction.
+
+## What you will build on Day 2
+
+{/* ILLUSTRATION I-03: Preview of the finished product. Short screen recording: dashboard filtering by genre, then a slider panel where energy/danceability change a "viral probability" gauge. */}
+
+Here is a preview of the end result: a dashboard exploring popularity, and a model where you move sliders for a new song's features and watch the predicted probability of going viral change.
+
+<Check>
+By the end of this session you can name the three data roles and state the business problem in one sentence.
+</Check>
+
+<Accordion title="Check yourself">
+Which role would build a dashboard showing average popularity per genre? **Data Analytics.** Which role would predict the popularity of an unreleased song? **Data Science.**
+</Accordion>

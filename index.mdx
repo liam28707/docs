@@ -1,20 +1,58 @@
 ---
-title: "Introduction"
-description: "Welcome to your project"
+title: "Data Analytics & Machine Learning Workshop"
+description: "Can we predict a hit song before it drops? Two days, zero prior experience needed."
+icon: "music"
 ---
 
-Write a short description of your product here. What it does, who it's for, and what they can accomplish with it.
+{/* ILLUSTRATION I-01: Hero — short looping GIF of the finished Power BI dashboard + the live "viral probability" prediction. */}
 
-<Tip>
-  Ready to make this your own? Start by editing this page. Update your `docs.json` file to customize your site. Then fill out the [Quickstart](/quickstart) page.
-</Tip>
+## What you will build
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  This card links to the quickstart page in your project.
-</Card>
-<Card title="Components" icon="puzzle-piece" href="https://mintlify.com/docs/components">
-  Add cards, callouts, steps, tabs, and more to design and structure your pages.
-</Card>
-<Card title="Settings" icon="gear" href="https://mintlify.com/docs/organize/settings">
-  Set your site name, branding, and navigation in the `docs.json` file.
-</Card>
+Record labels spend millions promoting songs. If they could estimate which tracks are likely to become hits _before_ release, they could spend that money better. Over two days you will build a small version of exactly that system:
+
+1. A **Power BI dashboard** that explores what makes a song popular.
+2. A **machine learning model** in Python (Google Colab) that predicts a track's chance of going viral from its audio features.
+3. A **loop between the two**, where model predictions come back into the dashboard.
+
+<Note>
+  No coding or statistics background is needed. If you can use Excel or a spreadsheet, you can follow along.
+</Note>
+
+## Schedule
+
+<CardGroup cols={2}>
+  <Card title="Day 1 — Concepts (120 min)" icon="lightbulb" href="/day-1/framing">
+    Careers in data, how data is stored and cleaned, Power BI basics, and how machine learning works.
+  </Card>
+
+  <Card title="Day 2 — Hands-On (120 min)" icon="laptop-code" href="/day-2/setup">
+    Clean the data, build the dashboard, train the model, and make live predictions.
+  </Card>
+</CardGroup>
+
+| Day | Session | Time |
+| --- | --- | --- |
+| 1 | Framing | 10 min |
+| 1 | The Data Ecosystem | 25 min |
+| 1 | Visual Analytics & Power BI | 25 min |
+| 1 | Break | 5 min |
+| 1 | Machine Learning Fundamentals | 30 min |
+| 1 | Production Pipelines & Workflows | 10 min |
+| 1 | Environment Setup Lab | 15 min |
+| 2 | Setup | 10 min |
+| 2 | Data Ingestion & Power BI Build | 40 min |
+| 2 | Deciphering Visual Insights | 15 min |
+| 2 | ML Prediction Engine | 30 min |
+| 2 | Break | 5 min |
+| 2 | Connecting BI & ML | 20 min |
+| 2 | Cleanup & Next Steps | 5 min |
+
+## What you need
+
+- A university lab computer (Windows, with Power BI Desktop), or your own Windows laptop
+- A Google account (for Google Colab)
+- A free Kaggle account (to download the dataset)
+
+## The dataset
+
+We use the [Spotify Tracks Dataset](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset): about 114,000 tracks across 114 genres, each described by audio features such as danceability, energy and tempo, plus a `popularity` score from 0 to 100.

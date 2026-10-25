@@ -1,0 +1,54 @@
+---
+title: "Session 5 — Connecting BI & ML"
+description: "Bring model predictions back into Power BI."
+icon: "link"
+---
+
+**Duration:** 20 minutes. This is mainly a **demonstration**. Follow along if time allows.
+
+## Why connect them?
+
+Executives do not read Python scripts. They open a dashboard. For model results to change decisions, they need to appear where decision-makers already look.
+
+{/* ILLUSTRATION I-22: Loop diagram: Data → Colab model → predictions CSV → Power BI dashboard → decision → new data. Each arrow clickable for one sentence of detail. */}
+
+## Step 1: Export predictions from Colab
+
+Add a column of predicted probabilities and download the file.
+
+```python
+df["predicted_viral_prob"] = model.predict_proba(df[features])[:, 1]
+
+from google.colab import files
+df[["track_id", "track_name", "track_genre", "popularity",
+    "viral", "predicted_viral_prob"]].to_csv("predictions.csv", index=False)
+files.download("predictions.csv")
+```
+
+<Warning>
+These predictions are on tracks the model **already saw while training**, so they look better than they would on new songs. That is fine for a dashboard demo, but never use them to report model accuracy.
+</Warning>
+
+## Step 2: Load into Power BI
+
+<Steps>
+  <Step title="Import the new file">
+    **Get data** → **Text/CSV** → `predictions.csv` → **Load**.
+  </Step>
+  <Step title="Add a visual">
+    Create a bar chart: **Y** = `track_genre`, **X** = **Average of** `predicted_viral_prob`, Top 10.
+  </Step>
+  <Step title="Compare with reality">
+    Place it beside your earlier average-popularity bar chart. Where do predicted and actual rankings differ?
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-23: Screenshot of the finished "actual vs predicted by genre" view, with the differences circled. */}
+
+## The enterprise reality
+
+In a real company the export step is automated: the model runs on a schedule, writes to a warehouse, and Power BI refreshes by itself. Analysts and executives interact only with the dashboard. Remember the **drift** from Day 1: someone still needs to monitor whether those predictions stay accurate.
+
+<Accordion title="Check yourself">
+Why is the dashboard the "interface" of a model for most business users? **Because they need to explore results visually and interactively, without writing code.**
+</Accordion>

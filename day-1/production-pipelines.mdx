@@ -1,0 +1,37 @@
+---
+title: "Session 5 — Production Pipelines & Workflows"
+description: "What happens after a model is trained."
+icon: "route"
+---
+
+**Duration:** 10 minutes
+
+A model sitting in a notebook helps nobody. To be useful, it has to be **deployed** so other systems can use it.
+
+## Deployment and APIs
+
+The most common approach is to wrap the model in an **API** (Application Programming Interface): a doorway other software can knock on.
+
+1. A label's A&R app sends a track's audio features to the API.
+2. The API runs the model.
+3. It sends back a prediction, for example "62% chance of going viral".
+
+Getting an answer on demand like this is called **real-time inference**.
+
+{/* ILLUSTRATION I-13: Animated request/response flow: App → API → Model → App, with a sample JSON request and response that students can edit (change energy and see a new fake probability). */}
+
+## Model drift
+
+The world changes, and models don't notice. This is **model drift**.
+
+- Music tastes shift: what was a hit in 2015 may not be today.
+- Platforms change their recommendation algorithm.
+- A new trend (for example a viral dance) changes what listeners want.
+
+A model trained on old data slowly becomes less accurate. Teams **monitor** accuracy and **retrain** with fresh data when it drops.
+
+{/* ILLUSTRATION I-14: Drift timeline. A slider moves through years; the "tastes" cloud (e.g. average danceability of hits) shifts and the model's accuracy line falls, with a "Retrain" button that restores it. */}
+
+<Accordion title="Check yourself">
+Why can a model that was 85% accurate last year be only 70% accurate today? **The world changed (drift) and the model learned an older pattern. It needs retraining.**
+</Accordion>

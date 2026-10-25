@@ -1,0 +1,142 @@
+---
+title: "Session 4 — Machine Learning Prediction Engine"
+description: "Train a random forest in Google Colab and make live predictions."
+icon: "robot"
+---
+
+**Duration:** 30 minutes
+
+Open a new Colab notebook. Paste each block into its own cell and run it with **Shift + Enter**.
+
+## Step 1: Load the data
+
+Click the folder icon on the left of Colab, then the upload icon, and upload `dataset.csv`.
+
+```python
+import pandas as pd
+
+df = pd.read_csv("dataset.csv")
+print(df.shape)
+df.head()
+```
+
+## Step 2: Clean it (the same steps as Power Query)
+
+```python
+df = df.drop(columns=["Unnamed: 0"], errors="ignore")  # row-number column
+df = df.dropna(subset=["track_name"])                  # remove blank rows
+df = df.drop_duplicates(subset="track_id")             # one row per track
+print(df.shape)
+```
+
+## Step 3: Define the target
+
+```python
+df["viral"] = (df["popularity"] >= 60).astype(int)
+print(df["viral"].mean())   # share of tracks labelled viral
+```
+
+<Note>
+Use the same threshold as in Power BI. If the printed share is extremely small (for example under 5%), lower the threshold so the model has enough viral examples to learn from.
+</Note>
+
+## Step 4: Pick features and split the data
+
+```python
+from sklearn.model_selection import train_test_split
+
+features = ["danceability", "energy", "loudness", "speechiness",
+            "acousticness", "instrumentalness", "liveness",
+            "valence", "tempo"]
+
+X = df[features]   # inputs
+y = df["viral"]    # target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+```
+
+## Step 5: Train the random forest
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(
+    n_estimators=100, max_depth=12, class_weight="balanced",
+    random_state=42, n_jobs=-1
+)
+model.fit(X_train, y_train)
+```
+
+## Step 6: Check it on unseen data
+
+```python
+from sklearn.metrics import accuracy_score
+
+print("Train accuracy:", accuracy_score(y_train, model.predict(X_train)))
+print("Test accuracy: ", accuracy_score(y_test,  model.predict(X_test)))
+print("Guessing 'not viral' every time would score:", 1 - y_test.mean())
+```
+
+<Warning>
+Compare the last line to the test accuracy. If the model barely beats "always say not viral", it has found little signal. That is an honest and useful result: audio features alone only partly explain popularity. Also, if train accuracy is far above test accuracy, that is overfitting from Day 1.
+</Warning>
+
+{/* ILLUSTRATION I-19: Side-by-side bar of Train vs Test vs "always guess no" baseline accuracy, with a tooltip explaining each. */}
+
+## Step 7: Which features matter?
+
+```python
+import matplotlib.pyplot as plt
+
+importance = pd.Series(model.feature_importances_, index=features).sort_values()
+importance.plot(kind="barh", title="Feature importance")
+plt.show()
+```
+
+{/* ILLUSTRATION I-20: Feature importance chart next to the students' saved hypotheses from Session 3, so they can mark each hypothesis "supported / not supported". */}
+
+Compare this chart with the hypotheses you wrote. Did the model agree?
+
+## The experiment: be the business stakeholder
+
+```python
+def predict_viral(danceability, energy, loudness, speechiness,
+                  acousticness, instrumentalness, liveness, valence, tempo):
+    row = pd.DataFrame([[danceability, energy, loudness, speechiness,
+                         acousticness, instrumentalness, liveness,
+                         valence, tempo]], columns=features)
+    return model.predict_proba(row)[0][1]
+
+p = predict_viral(0.75, 0.80, -5.0, 0.05, 0.10, 0.0, 0.15, 0.70, 120)
+print(f"Chance of going viral: {p:.0%}")
+```
+
+Want sliders? Run this cell too:
+
+```python
+import ipywidgets as w
+
+w.interact(
+    lambda danceability=0.7, energy=0.7, loudness=-6.0, speechiness=0.05,
+           acousticness=0.2, instrumentalness=0.0, liveness=0.15,
+           valence=0.5, tempo=120:
+        print(f"Chance of going viral: {predict_viral(danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, valence, tempo):.0%}"),
+    danceability=(0.0, 1.0, 0.05), energy=(0.0, 1.0, 0.05),
+    loudness=(-40.0, 0.0, 1.0), speechiness=(0.0, 1.0, 0.05),
+    acousticness=(0.0, 1.0, 0.05), instrumentalness=(0.0, 1.0, 0.05),
+    liveness=(0.0, 1.0, 0.05), valence=(0.0, 1.0, 0.05),
+    tempo=(40, 220, 5)
+)
+```
+
+{/* ILLUSTRATION I-21: Embedded web version of the slider panel (HTML) with a probability gauge, so students can play even if Colab is slow. */}
+
+### Iterate: push a variable to the extreme
+
+Set `danceability` to `0`, then `1`. Then try `energy = 0`, then `instrumentalness = 1`. Watch the probability.
+
+<Tip>
+Features with large swings have more influence on the model. Compare this with the importance chart. Do they match? Remember, though, that sliders can create combinations no real song has, so treat extremes as a way to understand the model rather than as advice for musicians.
+</Tip>

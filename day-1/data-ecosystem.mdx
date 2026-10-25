@@ -1,0 +1,59 @@
+---
+title: "Session 2 — The Data Ecosystem"
+description: "Where data lives, how it flows, and why cleaning matters."
+icon: "database"
+---
+
+**Duration:** 25 minutes
+
+## Where does data live?
+
+| | On-premises | Cloud data warehouse |
+|---|---|---|
+| **Where** | Servers the company owns and runs | Rented from a provider over the internet |
+| **Cost model** | Large upfront purchase | Pay for what you use |
+| **Scaling** | Buy more machines | Click a button |
+| **Examples** | A university's own server room | Snowflake, Google BigQuery |
+
+{/* ILLUSTRATION I-04: Interactive toggle "On-premises / Cloud". Switching animates the picture (server room vs. cloud) and updates a cost-over-time line chart as the "company" grows from 10 to 10 million rows. */}
+
+A streaming platform that stores billions of plays a day cannot realistically fit that into a single office server, which is why most use cloud warehouses.
+
+## The data lifecycle
+
+<Steps>
+  <Step title="Extract">
+    Pull raw data from its source: an app, a database, a CSV file. *In our workshop:* the Kaggle CSV.
+  </Step>
+  <Step title="Transform">
+    Clean it and reshape it: fix types, remove duplicates and blanks. *In our workshop:* Power Query.
+  </Step>
+  <Step title="Model">
+    Use the clean data to find patterns or make predictions. *In our workshop:* the Random Forest in Colab.
+  </Step>
+  <Step title="Visualize">
+    Present results so people can act on them. *In our workshop:* the Power BI dashboard.
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-05: Clickable horizontal pipeline of the four stages. Clicking a stage shows a one-line example from the Spotify project and the tool used. */}
+
+## Data hygiene: why cleaning takes up so much time
+
+A commonly quoted rule of thumb says about **80% of data work is cleaning**. It is a rough figure, not a law, but the point is real: models and charts are only as good as the data under them. This is often called **garbage in, garbage out**.
+
+Examples you will meet in the Spotify data:
+
+- **Duplicate tracks.** The same song appears once per genre it is tagged with, so it can be counted several times.
+- **Missing values.** A few rows have no track name or artist.
+- **Wrong data types.** A number stored as text cannot be averaged.
+
+<Warning>
+**The cost of bad data.** If duplicates make one song look five times as common, your model may "learn" that its features matter five times more than they do. A wrong prediction leads to a wrong decision about where to spend money, and that is a real cost.
+</Warning>
+
+{/* ILLUSTRATION I-06: "Spot the problem" mini game. A 10-row messy table; students click cells they think are errors (duplicate row, text in number column, blank). Score at the end with explanations. */}
+
+<Accordion title="Check yourself">
+Put these in order: visualize, extract, model, transform. **Extract, transform, model, visualize.**
+</Accordion>

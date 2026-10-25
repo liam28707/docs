@@ -1,0 +1,81 @@
+---
+title: "Session 3 — Visual Analytics & Power BI Core Skills"
+description: "Connecting data, dimensions vs measures, and choosing the right chart."
+icon: "chart-pie"
+---
+
+**Duration:** 25 minutes
+
+## Connecting data
+
+Power BI can read data in two main ways:
+
+| | Flat file (CSV) | Live database connection |
+|---|---|---|
+| **What it is** | A snapshot saved in a file | A direct link to a database |
+| **Updates** | Only when you re-import | Can refresh automatically |
+| **Best for** | Learning, one-off analysis | Production dashboards |
+
+We use a CSV today because it is simple and needs no server.
+
+## Dimensions vs measures
+
+This one idea unlocks most of Power BI.
+
+- A **dimension** is a category you *slice by*: genre, explicit (yes/no), key.
+- A **measure** is a number you *calculate*: average popularity, count of tracks, average energy.
+
+<Tip>
+Quick test: can you meaningfully **average** it? Yes → measure. No → dimension. (Averaging genres makes no sense; averaging tempo does.)
+</Tip>
+
+{/* ILLUSTRATION I-07: Drag-and-sort game. Chips (genre, popularity, tempo, explicit, track_name, energy, key...) are dragged into "Dimension" or "Measure" buckets with instant feedback. */}
+
+## Choosing the right visual
+
+| Goal | Chart | Spotify example |
+|---|---|---|
+| Compare categories | Bar chart | Average popularity by genre |
+| Spot a relationship between two numbers | Scatter plot | Energy vs valence (happiness) |
+| Show one headline number | KPI card | Percentage of viral tracks |
+
+{/* ILLUSTRATION I-08: "Chart chooser" quiz. Show a question ("How does loudness relate to energy?"), student picks a chart type, the correct chart renders with a short why. */}
+
+### Track-specific examples
+
+- **Bar chart:** average popularity (measure) by genre (dimension).
+- **Scatter plot:** each dot is a song; position shows two audio features.
+- **KPI card:** the share of tracks that count as viral.
+
+<Note>
+**Heads-up about the dataset:** it has a `popularity` score (0–100) but no raw stream counts, so wherever you see "streams" in other material, we use **popularity** instead.
+</Note>
+
+## How this connects to Day 2's ML model
+
+Every pattern you spot in a chart is a *hypothesis* about which features drive popularity. On Day 2 you will write those hypotheses down, then check whether the model agrees. Dashboard first, model second.
+
+## Mini-demo: California Housing
+
+Before touching Spotify, we practise on something simpler. The **California Housing** dataset is built into Google Colab at `/content/sample_data/california_housing_train.csv`.
+
+<Steps>
+  <Step title="Get the file">
+    In Colab, open the Files panel (folder icon), go to `sample_data`, and download `california_housing_train.csv`.
+  </Step>
+  <Step title="Load it">
+    Power BI Desktop → **Get data** → **Text/CSV** → select the file → **Load**.
+  </Step>
+  <Step title="Make a map-like scatter plot">
+    Add a **Scatter chart**. Put `longitude` on X, `latitude` on Y, and `median_house_value` in **Size** (or Color saturation). Set the values to **Average** rather than Sum.
+  </Step>
+  <Step title="Add a KPI card">
+    Add a **Card** visual with `median_house_value` set to **Average**.
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-09: Screenshot of the finished housing scatter plot, showing the outline of California emerging from the dots, with callouts on step 3 settings. */}
+
+<Check>
+You should see the shape of California appear, with expensive areas clustered along the coast. Data tells a visual story before any model is involved.
+</Check>

@@ -1,0 +1,74 @@
+---
+title: "Session 2 — Data Ingestion & Power BI Build"
+description: "Clean the data with Power Query, then build the dashboard step by step."
+icon: "table"
+---
+
+**Duration:** 40 minutes
+
+## Part 1: Load and clean with Power Query (15 min)
+
+Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L**oad.
+
+<Steps>
+  <Step title="Extract: load the CSV">
+    **Home** → **Get data** → **Text/CSV** → select `dataset.csv` → **Transform Data** (not Load).
+  </Step>
+  <Step title="Transform: remove the junk index column">
+    If there is a first column called `Column1` or `Unnamed: 0`, right-click it → **Remove**. It is only a row number.
+  </Step>
+  <Step title="Transform: fix data types">
+    Click the small icon in each column header. Set `popularity` to **Whole Number**; `danceability`, `energy`, `valence`, `acousticness`, `tempo` and similar to **Decimal Number**; `explicit` to **True/False**.
+  </Step>
+  <Step title="Transform: remove blank rows">
+    Select `track_name` → **Home** → **Remove Rows** → **Remove Blank Rows**. A handful of tracks have no name.
+  </Step>
+  <Step title="Transform: remove duplicates">
+    Select `track_id` → right-click → **Remove Duplicates**. Why? The same track appears once per genre it belongs to.
+  </Step>
+  <Step title="Add the target column">
+    **Add Column** → **Custom Column**, name it `viral_label`, formula:
+    ```
+    if [popularity] >= 60 then "Viral" else "Not viral"
+    ```
+  </Step>
+  <Step title="Load">
+    **Home** → **Close & Apply**.
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-16: Before/after Power Query screenshot pair with a draggable divider. Annotate each step number on the "applied steps" panel. */}
+
+<Note>
+The threshold `60` is a starting choice. Facilitators: check what share of tracks it labels viral on this data and adjust (Session 4 shows how). The aim is a minority class large enough for the model to learn from.
+</Note>
+
+## Part 2: Build the dashboard (25 min)
+
+Build line by line, and say out loud *why* each piece exists.
+
+<Steps>
+  <Step title="KPI cards: the big picture">
+    Add three **Card** visuals: **Count of** `track_id` (total tracks), **Average of** `popularity`, and a viral share. For the viral share create a measure: **Modeling** → **New measure**:
+    ```
+    Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 60)), COUNTROWS('dataset'))
+    ```
+    Format it as a percentage.
+  </Step>
+  <Step title="Bar chart: which genres are most popular?">
+    **Clustered bar chart**. Y-axis: `track_genre`. X-axis: **Average of** `popularity`. In the Filters pane set **Top N** to 10 by that value.
+  </Step>
+  <Step title="Scatter plot: Energy vs Happiness">
+    **Scatter chart**. X: **Average of** `energy`. Y: **Average of** `valence` (valence is the "happiness" of a track). **Details:** `track_name`. **Size:** **Average of** `popularity`. **Legend:** `viral_label`.
+    <Tip>With 100,000+ dots the chart becomes unreadable, which is exactly why the next step exists.</Tip>
+  </Step>
+  <Step title="Slicer: filter by genre">
+    **Slicer** visual with `track_genre`. Pick two or three genres and watch every visual update. This interactivity is the whole point of a dashboard.
+  </Step>
+</Steps>
+
+{/* ILLUSTRATION I-17: Annotated screenshot of the finished dashboard with numbered callouts matching steps 1–4 above, plus a downloadable .pbix "answer key". */}
+
+<Check>
+Your dashboard should have three cards, a top-10 bar chart, a scatter plot coloured by viral/not viral, and a genre slicer that filters all of them.
+</Check>

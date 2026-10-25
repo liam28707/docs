@@ -1,10 +1,10 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Data Analytics & ML Workshop",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
+    "primary": "#1DB954",
+    "light": "#4ADE80",
     "dark": "#15803D"
   },
   "favicon": "/favicon.svg",
@@ -15,6 +15,30 @@
         "pages": [
           "index",
           "quickstart"
+        ]
+      },
+      {
+        "group": "Day 1 — Concepts",
+        "icon": "lightbulb",
+        "pages": [
+          "day-1/framing",
+          "day-1/data-ecosystem",
+          "day-1/visual-analytics-power-bi",
+          "day-1/ml-fundamentals",
+          "day-1/production-pipelines",
+          "day-1/environment-setup"
+        ]
+      },
+      {
+        "group": "Day 2 — Hands-On",
+        "icon": "laptop-code",
+        "pages": [
+          "day-2/setup",
+          "day-2/data-ingestion-power-bi",
+          "day-2/deciphering-insights",
+          "day-2/ml-prediction-engine",
+          "day-2/connecting-bi-and-ml",
+          "day-2/cleanup-next-steps"
         ]
       }
     ],
