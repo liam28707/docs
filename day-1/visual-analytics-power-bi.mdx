@@ -27,7 +27,51 @@ This one idea unlocks most of Power BI.
 Quick test: can you meaningfully **average** it? Yes → measure. No → dimension. (Averaging genres makes no sense; averaging tempo does.)
 </Tip>
 
-{/* ILLUSTRATION I-07: Drag-and-sort game. Chips (genre, popularity, tempo, explicit, track_name, energy, key...) are dragged into "Dimension" or "Measure" buckets with instant feedback. */}
+export const SortGame = () => {
+  const items = [
+    { n: "track_genre", a: "Dimension", why: "A category. You slice by it, you can't average it." },
+    { n: "popularity", a: "Measure", why: "A number you can average: average popularity." },
+    { n: "tempo", a: "Measure", why: "Beats per minute. Averaging it makes sense." },
+    { n: "explicit", a: "Dimension", why: "True/False is a category: explicit or not." },
+    { n: "track_name", a: "Dimension", why: "A label that identifies a row. Text, not a quantity." },
+    { n: "energy", a: "Measure", why: "A 0 to 1 score you can average." },
+    { n: "key", a: "Dimension", why: "Stored as a number (0 to 11) but it names a musical key. Averaging keys is meaningless, so it's a category." },
+    { n: "duration_ms", a: "Measure", why: "Track length. Averaging gives an average length." },
+  ];
+  const [ans, setAns] = useState({});
+  const done = Object.keys(ans).length;
+  const score = items.filter((i) => ans[i.n] === i.a).length;
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: dimension or measure?</p>
+      <p className="text-sm mt-1">Tap a button for each column in the Spotify dataset.</p>
+      <div className="grid gap-2">
+        {items.map((i) => {
+          const picked = ans[i.n];
+          return (
+            <div key={i.n} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm">
+              <div className="flex items-center justify-between gap-2">
+                <code>{i.n}</code>
+                <span>
+                  {["Dimension", "Measure"].map((o) => (
+                    <button key={o} onClick={() => !picked && setAns({ ...ans, [i.n]: o })} className="ml-2 px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600" style={picked === o ? { background: o === i.a ? "#1DB954" : "#EF4444", color: "white" } : {}}>{o}</button>
+                  ))}
+                </span>
+              </div>
+              {picked ? <p className="m-0 mt-1 opacity-80">{picked === i.a ? "Correct. " : "Not quite: it's a " + i.a.toLowerCase() + ". "}{i.why}</p> : null}
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 flex items-center justify-between">
+        <p className="m-0 font-semibold">{done === items.length ? "Score: " + score + " / " + items.length : done + " of " + items.length + " answered"}</p>
+        <button onClick={() => setAns({})} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Reset</button>
+      </div>
+    </div>
+  );
+};
+
+<SortGame />
 
 ## Choosing the right visual
 
@@ -37,7 +81,52 @@ Quick test: can you meaningfully **average** it? Yes → measure. No → dimensi
 | Spot a relationship between two numbers | Scatter plot | Energy vs valence (happiness) |
 | Show one headline number | KPI card | Percentage of viral tracks |
 
-{/* ILLUSTRATION I-08: "Chart chooser" quiz. Show a question ("How does loudness relate to energy?"), student picks a chart type, the correct chart renders with a short why. */}
+export const ChartChooser = () => {
+  const qs = [
+    { q: "How does loudness relate to energy?", a: "Scatter plot", why: "Two numbers against each other: a scatter plot shows whether they rise together." },
+    { q: "Which genres have the highest average popularity?", a: "Bar chart", why: "Comparing a measure across categories is exactly what a bar chart is for." },
+    { q: "What share of all tracks are viral?", a: "KPI card", why: "One headline number. A card makes it impossible to miss." },
+    { q: "Do happier songs (higher valence) tend to be more danceable?", a: "Scatter plot", why: "Again a relationship between two numbers, so a scatter plot." },
+  ];
+  const opts = ["Bar chart", "Scatter plot", "KPI card"];
+  const [i, setI] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [score, setScore] = useState(0);
+  const finished = i >= qs.length;
+  const cur = qs[Math.min(i, qs.length - 1)];
+  const choose = (o) => { if (pick) return; setPick(o); if (o === cur.a) setScore(score + 1); };
+  const next = () => { setPick(null); setI(i + 1); };
+  const restart = () => { setI(0); setPick(null); setScore(0); };
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: pick the right chart</p>
+      {finished ? (
+        <div>
+          <p className="mt-3 font-semibold">You got {score} of {qs.length}.</p>
+          <button onClick={restart} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Try again</button>
+        </div>
+      ) : (
+        <div>
+          <p className="text-sm mt-1">Question {i + 1} of {qs.length}</p>
+          <p className="font-medium">{cur.q}</p>
+          <div className="flex flex-wrap gap-2">
+            {opts.map((o) => (
+              <button key={o} onClick={() => choose(o)} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600" style={pick === o ? { background: o === cur.a ? "#1DB954" : "#EF4444", color: "white" } : {}}>{o}</button>
+            ))}
+          </div>
+          {pick ? (
+            <div>
+              <p className="mt-3 mb-1"><strong>{pick === cur.a ? "Correct." : "Not quite. The best choice is " + cur.a + "."}</strong> {cur.why}</p>
+              <button onClick={next} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">{i + 1 < qs.length ? "Next question" : "See score"}</button>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </div>
+  );
+};
+
+<ChartChooser />
 
 ### Track-specific examples
 

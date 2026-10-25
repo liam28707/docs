@@ -28,7 +28,48 @@ The world changes, and models don't notice. This is **model drift**.
 
 A model trained on old data slowly becomes less accurate. Teams **monitor** accuracy and **retrain** with fresh data when it drops.
 
-{/* ILLUSTRATION I-14: Drift timeline. A slider moves through years; the "tastes" cloud (e.g. average danceability of hits) shifts and the model's accuracy line falls, with a "Retrain" button that restores it. */}
+export const DriftDemo = () => {
+  const start = 2015;
+  const end = 2026;
+  const [year, setYear] = useState(start);
+  const [retrains, setRetrains] = useState([start]);
+  const lastTrain = (y) => Math.max(...retrains.filter((r) => r <= y));
+  const acc = (y) => Math.max(0.55, 0.85 - 0.025 * (y - lastTrain(y)));
+  const taste = (y) => 0.6 + 0.012 * (y - start);
+  const years = Array.from({ length: year - start + 1 }, (_, i) => start + i);
+  const x = (y) => 40 + ((y - start) / (end - start)) * 320;
+  const yy = (a) => 170 - ((a - 0.5) / 0.4) * 150;
+  const pts = years.map((y) => x(y) + "," + yy(acc(y))).join(" ");
+  const retrain = () => { if (!retrains.includes(year)) setRetrains([...retrains, year]); };
+  const reset = () => { setRetrains([start]); setYear(start); };
+  const a = Math.round(acc(year) * 100);
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: watch a model drift</p>
+      <p className="text-sm mt-1">Move through the years. Listener tastes change, and a model trained on old data slowly gets worse.</p>
+      <svg viewBox="0 0 380 200" className="w-full">
+        <line x1="40" y1="170" x2="360" y2="170" stroke="currentColor" strokeOpacity="0.3" />
+        <line x1="40" y1="20" x2="40" y2="170" stroke="currentColor" strokeOpacity="0.3" />
+        <polyline points={pts} fill="none" stroke="#1DB954" strokeWidth="3" />
+        {retrains.map((r) => r <= year ? <line key={r} x1={x(r)} y1="20" x2={x(r)} y2="170" stroke="#F59E0B" strokeDasharray="4" /> : null)}
+        <circle cx={x(year)} cy={yy(acc(year))} r="5" fill="#1DB954" />
+        <text x="45" y="16" fontSize="10" fill="currentColor">model accuracy</text>
+        <text x="40" y="190" fontSize="10" fill="currentColor">{start}</text>
+        <text x="340" y="190" fontSize="10" fill="currentColor">{end}</text>
+      </svg>
+      <input type="range" min={start} max={end} value={year} onChange={(e) => setYear(Number(e.target.value))} className="w-full" />
+      <p className="m-0 text-sm"><strong>Year {year}</strong>. Average danceability of hits: {taste(year).toFixed(2)}. Model last trained in {lastTrain(year)}. Accuracy: <strong>{a}%</strong></p>
+      <p className="m-0 mt-1 text-sm">{a >= 80 ? "Healthy: the model still matches how listeners behave." : a >= 70 ? "Slipping: time to check the monitoring." : "Drifted: retrain on recent data."}</p>
+      <div className="mt-2 flex gap-2">
+        <button onClick={retrain} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Retrain now (dashed line)</button>
+        <button onClick={reset} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Reset</button>
+      </div>
+      <p className="m-0 mt-1 text-xs opacity-70">Illustrative numbers for teaching, not real data.</p>
+    </div>
+  );
+};
+
+<DriftDemo />
 
 <Accordion title="Check yourself">
 Why can a model that was 85% accurate last year be only 70% accurate today? **The world changed (drift) and the model learned an older pattern. It needs retraining.**

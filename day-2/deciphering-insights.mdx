@@ -33,7 +33,58 @@ A good hypothesis names a **feature**, a **direction** and ideally a **size**, a
   </Tab>
 </Tabs>
 
-{/* ILLUSTRATION I-18: Hypothesis builder. Dropdowns ("feature", "direction", "evidence from which visual") that assemble the sentence, plus a place to save it. Saved hypotheses are revisited after the model runs. */}
+export const HypothesisBuilder = () => {
+  const features = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"];
+  const visuals = ["the scatter plot", "the genre bar chart", "the viral share card", "the genre slicer"];
+  const [f, setF] = useState("");
+  const [d, setD] = useState("");
+  const [v, setV] = useState("");
+  const [g, setG] = useState("");
+  const sel = "ml-2 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-transparent";
+  const ready = f && d && v;
+  const checks = [[f, "Names a feature"], [d, "Gives a direction"], [v, "Points to evidence"]];
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: build a hypothesis</p>
+      <p className="text-sm mt-1">Fill in the blanks using what you see on your dashboard.</p>
+      <div className="grid gap-2 text-sm">
+        <label>Feature
+          <select className={sel} value={f} onChange={(e) => setF(e.target.value)}>
+            <option value="">choose...</option>
+            {features.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label>Viral tracks tend to have
+          <select className={sel} value={d} onChange={(e) => setD(e.target.value)}>
+            <option value="">choose...</option>
+            <option value="higher">higher</option>
+            <option value="lower">lower</option>
+            <option value="about the same">about the same</option>
+          </select>
+          values than non-viral ones
+        </label>
+        <label>Evidence from
+          <select className={sel} value={v} onChange={(e) => setV(e.target.value)}>
+            <option value="">choose...</option>
+            {visuals.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label>Genre I filtered to (optional)
+          <input className={sel} value={g} onChange={(e) => setG(e.target.value)} placeholder="e.g. pop" />
+        </label>
+      </div>
+      <div className="mt-3 rounded-lg px-3 py-2 text-sm border border-zinc-200 dark:border-zinc-700">
+        {ready
+          ? <span><strong>My hypothesis:</strong> {g ? "In " + g + ", v" : "V"}iral tracks tend to have {d} {f} than non-viral ones, based on {v}.</span>
+          : <span className="opacity-70">Your sentence appears here once you've picked a feature, a direction and your evidence.</span>}
+      </div>
+      <p className="mt-2 mb-0 text-sm">{checks.map(([ok, label]) => <span key={label} className="mr-3" style={{ color: ok ? "#1DB954" : "inherit", opacity: ok ? 1 : 0.6 }}>{ok ? "✓" : "○"} {label}</span>)}</p>
+      <p className="m-0 mt-1 text-xs opacity-70">Write your sentence down. After the model runs, you'll check it against the feature importance chart.</p>
+    </div>
+  );
+};
+
+<HypothesisBuilder />
 
 ### Activity (10 min)
 
