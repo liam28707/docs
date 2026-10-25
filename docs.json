@@ -18,7 +18,7 @@
         ]
       },
       {
-        "group": "Day 1 — Concepts",
+        "group": "Day 1",
         "icon": "lightbulb",
         "pages": [
           "day-1/framing",
@@ -30,7 +30,7 @@
         ]
       },
       {
-        "group": "Day 2 — Hands-On",
+        "group": "Day 2",
         "icon": "laptop-code",
         "pages": [
           "day-2/setup",
