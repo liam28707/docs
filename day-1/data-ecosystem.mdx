@@ -15,7 +15,51 @@ icon: "database"
 | **Scaling** | Buy more machines | Click a button |
 | **Examples** | A university's own server room | Snowflake, Google BigQuery |
 
-{/* ILLUSTRATION I-04: Interactive toggle "On-premises / Cloud". Switching animates the picture (server room vs. cloud) and updates a cost-over-time line chart as the "company" grows from 10 to 10 million rows. */}
+export const CloudToggle = () => {
+  const [mode, setMode] = useState("cloud");
+  const [size, setSize] = useState(2);
+  const onprem = (n) => 40 * Math.ceil(n / 3);
+  const cloud = (n) => 10 + 6 * n;
+  const sizes = Array.from({ length: 10 }, (_, i) => i + 1);
+  const x = (n) => 40 + ((n - 1) / 9) * 320;
+  const y = (c) => 170 - (c / 170) * 150;
+  const stepPts = sizes.map((n) => { const prev = n === 1 ? onprem(1) : onprem(n - 1); return x(n) + "," + y(prev) + " " + x(n) + "," + y(onprem(n)); }).join(" ");
+  const cloudPts = sizes.map((n) => x(n) + "," + y(cloud(n))).join(" ");
+  const servers = Math.ceil(size / 3);
+  const boxes = Array.from({ length: servers }, (_, i) => i);
+  const here = mode === "cloud" ? cloud(size) : onprem(size);
+  const btn = "px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600";
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: grow the company</p>
+      <p className="text-sm mt-1">Switch the setup, then drag the slider to grow the amount of data stored.</p>
+      <div className="flex gap-2">
+        <button className={btn} onClick={() => setMode("onprem")} style={mode === "onprem" ? { background: "#F59E0B", color: "white" } : {}}>On-premises</button>
+        <button className={btn} onClick={() => setMode("cloud")} style={mode === "cloud" ? { background: "#1DB954", color: "white" } : {}}>Cloud warehouse</button>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-sm min-h-10">
+        {mode === "onprem"
+          ? boxes.map((b) => <span key={b} className="rounded-md px-2 py-1 border" style={{ borderColor: "#F59E0B" }}>Server {b + 1}</span>)
+          : <span className="rounded-full px-4 py-1 border" style={{ borderColor: "#1DB954" }}>Cloud: using {size} TB, paying for {size} TB</span>}
+      </div>
+      <svg viewBox="0 0 380 200" className="w-full">
+        <line x1="40" y1="170" x2="360" y2="170" stroke="currentColor" strokeOpacity="0.3" />
+        <line x1="40" y1="20" x2="40" y2="170" stroke="currentColor" strokeOpacity="0.3" />
+        <polyline points={stepPts} fill="none" stroke="#F59E0B" strokeWidth={mode === "onprem" ? 4 : 2} />
+        <polyline points={cloudPts} fill="none" stroke="#1DB954" strokeWidth={mode === "cloud" ? 4 : 2} />
+        <line x1={x(size)} y1="20" x2={x(size)} y2="170" stroke="currentColor" strokeOpacity="0.5" strokeDasharray="4" />
+        <text x="45" y="16" fontSize="10" fill="currentColor">relative cost</text>
+        <text x="250" y="194" fontSize="10" fill="currentColor">data stored (TB) &rarr;</text>
+      </svg>
+      <input type="range" min="1" max="10" value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full" />
+      <p className="m-0 text-sm"><span style={{ color: "#F59E0B" }}>&#9632;</span> On-premises  <span style={{ color: "#1DB954" }}>&#9632;</span> Cloud. At {size} TB your cost is <strong>{here}</strong>.</p>
+      <p className="m-0 mt-1 text-sm">{mode === "onprem" ? "On-premises costs jump each time you outgrow your servers: you buy a whole new one." : "Cloud costs grow smoothly because you only pay for what you use."}</p>
+      <p className="m-0 mt-1 text-xs opacity-70">Illustrative numbers for teaching, not real prices.</p>
+    </div>
+  );
+};
+
+<CloudToggle />
 
 A streaming platform that stores billions of plays a day cannot realistically fit that into a single office server, which is why most use cloud warehouses.
 
@@ -36,7 +80,38 @@ A streaming platform that stores billions of plays a day cannot realistically fi
   </Step>
 </Steps>
 
-{/* ILLUSTRATION I-05: Clickable horizontal pipeline of the four stages. Clicking a stage shows a one-line example from the Spotify project and the tool used. */}
+export const LifecyclePipeline = () => {
+  const [sel, setSel] = useState(0);
+  const stages = [
+    { name: "Extract", what: "Pull raw data from where it lives.", example: "Download dataset.csv from Kaggle and open it.", tool: "Kaggle, Power BI Get Data, pandas read_csv", skip: "Without data, nothing else can happen." },
+    { name: "Transform", what: "Clean and reshape the data so it is trustworthy.", example: "Fix data types, drop blank rows, remove duplicate tracks, add the viral label.", tool: "Power Query, pandas", skip: "Duplicates and errors would flow into every chart and prediction." },
+    { name: "Model", what: "Find patterns and make predictions.", example: "Train a random forest to predict whether a track will go viral.", tool: "Python, scikit-learn, Colab", skip: "You could describe the past, but not estimate what is likely next." },
+    { name: "Visualize", what: "Present results so people can act on them.", example: "A dashboard of popularity by genre, plus predicted viral probability.", tool: "Power BI", skip: "Decision-makers never see the insight, so nothing changes." },
+  ];
+  const s = stages[sel];
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: follow the data</p>
+      <p className="text-sm mt-1">Tap each stage to see what happens in our Spotify project.</p>
+      <div className="flex flex-wrap items-center gap-2">
+        {stages.map((x, i) => (
+          <span key={x.name} className="flex items-center gap-2">
+            <button onClick={() => setSel(i)} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600" style={sel === i ? { background: "#1DB954", color: "white", borderColor: "#1DB954" } : {}}>{i + 1}. {x.name}</button>
+            {i + 1 === stages.length ? null : <span>&rarr;</span>}
+          </span>
+        ))}
+      </div>
+      <div className="mt-3 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-3 text-sm">
+        <p className="m-0 font-semibold">{s.what}</p>
+        <p className="mt-1 mb-0"><strong>In our project:</strong> {s.example}</p>
+        <p className="m-0"><strong>Tools:</strong> {s.tool}</p>
+        <p className="m-0"><strong>If you skip it:</strong> {s.skip}</p>
+      </div>
+    </div>
+  );
+};
+
+<LifecyclePipeline />
 
 ## Data hygiene: why cleaning takes up so much time
 
@@ -52,7 +127,87 @@ Examples you will meet in the Spotify data:
 **The cost of bad data.** If duplicates make one song look five times as common, your model may "learn" that its features matter five times more than they do. A wrong prediction leads to a wrong decision about where to spend money, and that is a real cost.
 </Warning>
 
-{/* ILLUSTRATION I-06: "Spot the problem" mini game. A 10-row messy table; students click cells they think are errors (duplicate row, text in number column, blank). Score at the end with explanations. */}
+export const SpotTheProblem = () => {
+  const cols = ["track_id", "track_name", "track_genre", "popularity", "danceability", "tempo"];
+  const rows = [
+    ["5SuOik", "Comedy", "pop", "73", "0.676", "87.9"],
+    ["4qPNDB", "Ghost - Acoustic", "acoustic", "55", "0.420", "77.5"],
+    ["5SuOik", "Comedy", "dance", "73", "0.676", "87.9"],
+    ["6lfxq3", "", "rock", "40", "0.500", "120.0"],
+    ["0nbXyq", "Hold On", "pop", "N/A", "0.800", "130.0"],
+    ["2ypxAs", "Rain", "jazz", "61", "1.700", "98.0"],
+    ["1hP3Wc", "Sunrise", "pop", "-5", "0.600", "110.0"],
+    ["7qiZfP", "Night Drive", "electronic", "66", "0.720", "2000.0"],
+  ];
+  const problems = {
+    "2-track_id": "Row 3 repeats the track_id of row 1 (the same song tagged with a second genre). It would be counted twice.",
+    "3-track_name": "Row 4 has no track name. A blank value that should be removed or handled.",
+    "4-popularity": "Row 5 has the text N/A in a number column, so it can't be averaged.",
+    "5-danceability": "Row 6 has danceability 1.7, but the scale only goes from 0 to 1.",
+    "6-popularity": "Row 7 has popularity -5, but popularity runs from 0 to 100.",
+    "7-tempo": "Row 8 has a tempo of 2000 BPM. No real song is that fast.",
+  };
+  const keys = Object.keys(problems);
+  const [flagged, setFlagged] = useState([]);
+  const [checked, setChecked] = useState(false);
+  const toggle = (k) => {
+    if (checked) return;
+    if (flagged.includes(k)) { setFlagged(flagged.filter((f) => f !== k)); } else { setFlagged(flagged.concat([k])); }
+  };
+  const found = keys.filter((k) => flagged.includes(k)).length;
+  const wrong = flagged.filter((k) => !keys.includes(k)).length;
+  const reset = () => { setFlagged([]); setChecked(false); };
+  const cellStyle = (k) => {
+    const isProblem = keys.includes(k);
+    const isFlag = flagged.includes(k);
+    if (checked) {
+      if (isProblem && isFlag) return { background: "rgba(29,185,84,0.35)" };
+      if (isProblem) return { outline: "2px solid #F59E0B" };
+      if (isFlag) return { background: "rgba(239,68,68,0.35)" };
+      return {};
+    }
+    return isFlag ? { background: "rgba(59,130,246,0.35)" } : {};
+  };
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: spot the problems</p>
+      <p className="text-sm mt-1">This is a messy slice of the Spotify data. Tap every cell you think is an error, then press Check. Six problems are hidden.</p>
+      <div className="overflow-x-auto">
+        <table className="text-sm w-full">
+          <thead>
+            <tr>{cols.map((c) => <th key={c} className="text-left px-2">{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri}>
+                {row.map((v, ci) => {
+                  const k = ri + "-" + cols[ci];
+                  return <td key={k} onClick={() => toggle(k)} className="px-2 py-1 cursor-pointer border border-zinc-200 dark:border-zinc-700" style={cellStyle(k)}>{v === "" ? "\u00A0" : v}</td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <button onClick={() => setChecked(true)} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Check</button>
+        <button onClick={reset} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Reset</button>
+        <span className="text-sm">{flagged.length} cells flagged</span>
+      </div>
+      {checked ? (
+        <div className="mt-3 text-sm">
+          <p className="m-0 font-semibold">You found {found} of {keys.length} problems{wrong > 0 ? ", with " + wrong + " false alarm" + (wrong === 1 ? "" : "s") : ""}.</p>
+          <p className="m-0 mt-1 opacity-70">Green = found, orange outline = missed, red = not actually an error.</p>
+          <ul className="mt-2">
+            {keys.map((k) => <li key={k}>{problems[k]}</li>)}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+<SpotTheProblem />
 
 <Accordion title="Check yourself">
 Put these in order: visualize, extract, model, transform. **Extract, transform, model, visualize.**

@@ -10,7 +10,39 @@ icon: "compass"
 
 "Data" is not one job. Think of a data team as three groups that hand work to each other.
 
-{/* ILLUSTRATION I-02: Interactive three-lane roadmap. Hover/tap a lane to reveal daily tasks, tools and a "day in the life" line. */}
+export const RolesRoadmap = () => {
+  const [sel, setSel] = useState(0);
+  const roles = [
+    { name: "Data Engineering", tag: "The builders", color: "#3B82F6", does: "Build and maintain the pipelines that collect, move and store data reliably.", daily: ["Pull data from apps and databases", "Schedule jobs that run every night", "Fix pipelines when they break"], tools: "SQL, Python, Snowflake, BigQuery", here: "Loading and cleaning dataset.csv in Power Query.", day: "Streams data from the music app into the warehouse, so everyone else has clean tables to work with." },
+    { name: "Data Analytics", tag: "The storytellers", color: "#1DB954", does: "Turn data into charts and dashboards that help people make decisions.", daily: ["Build and refresh dashboards", "Answer questions like which genres are growing", "Present findings to non-technical teams"], tools: "Power BI, Excel, SQL", here: "Building the Power BI dashboard on Day 2.", day: "Shows the marketing team which genres and moods are trending, so they know where to spend their budget." },
+    { name: "Data Science", tag: "The predictors", color: "#F59E0B", does: "Build models that predict what will happen next.", daily: ["Choose features and train models", "Test whether predictions hold up on new data", "Explain results and limits to stakeholders"], tools: "Python, scikit-learn, Colab", here: "Training the random forest that predicts viral probability.", day: "Builds the model that estimates which unreleased tracks are most likely to take off." },
+  ];
+  const r = roles[sel];
+  return (
+    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="font-semibold m-0">Try it: explore the three roles</p>
+      <p className="text-sm mt-1">Tap a role to see what the job looks like day to day.</p>
+      <div className="flex flex-wrap gap-2">
+        {roles.map((x, i) => (
+          <button key={x.name} onClick={() => setSel(i)} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600" style={sel === i ? { background: x.color, color: "white", borderColor: x.color } : {}}>{x.name}</button>
+        ))}
+      </div>
+      <div className="mt-3 rounded-lg border px-3 py-3 text-sm" style={{ borderColor: r.color }}>
+        <p className="m-0 font-semibold" style={{ color: r.color }}>{r.tag}</p>
+        <p className="mt-1 mb-2">{r.does}</p>
+        <p className="m-0 font-medium">A typical week</p>
+        <ul className="mt-1 mb-2">
+          {r.daily.map((d) => <li key={d}>{d}</li>)}
+        </ul>
+        <p className="m-0"><strong>Tools:</strong> {r.tools}</p>
+        <p className="m-0"><strong>At a music company:</strong> {r.day}</p>
+        <p className="m-0"><strong>In this workshop:</strong> {r.here}</p>
+      </div>
+    </div>
+  );
+};
+
+<RolesRoadmap />
 
 <CardGroup cols={3}>
   <Card title="Data Engineering" icon="hammer">
