@@ -113,7 +113,7 @@ export const LifecyclePipeline = () => {
 
 <LifecyclePipeline />
 
-## Data hygiene: why cleaning takes up so much time
+## Data Cleaning
 
 A commonly quoted rule of thumb says about **80% of data work is cleaning**. It is a rough figure, not a law, but the point is real: models and charts are only as good as the data under them. This is often called **garbage in, garbage out**.
 
@@ -169,36 +169,44 @@ export const SpotTheProblem = () => {
     return isFlag ? { background: "rgba(59,130,246,0.35)" } : {};
   };
   return (
-    <div className="my-6 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
-      <p className="font-semibold m-0">Try it: spot the problems</p>
-      <p className="text-sm mt-1">This is a messy slice of the Spotify data. Tap every cell you think is an error, then press Check. Six problems are hidden.</p>
-      <div className="overflow-x-auto">
-        <table className="text-sm w-full">
+    <div className="my-6 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
+      <div className="px-4 py-4" style={{ background: "linear-gradient(135deg, #1DB954, #0E7C3A)", color: "white" }}>
+        <p className="m-0 text-lg font-bold">Data Detective</p>
+        <p className="m-0 mt-1 text-sm">Six errors are hiding in this slice of the Spotify data. Tap any cell you think is wrong to flag it, then press Check.</p>
+        <p className="m-0 mt-2 text-xs font-semibold">
+          <span style={{ background: "rgba(255,255,255,0.25)", borderRadius: 999, padding: "2px 10px", marginRight: 8 }}>🚩 {flagged.length} flagged</span>
+          <span style={{ background: "rgba(255,255,255,0.25)", borderRadius: 999, padding: "2px 10px" }}>🕵️ {keys.length} hidden</span>
+        </p>
+      </div>
+      <div className="p-4 overflow-x-auto">
+        <table className="text-sm w-full" style={{ borderCollapse: "separate", borderSpacing: 3 }}>
           <thead>
-            <tr>{cols.map((c) => <th key={c} className="text-left px-2">{c}</th>)}</tr>
+            <tr>{cols.map((c) => <th key={c} className="text-left px-2 py-1 font-mono text-xs" style={{ background: "rgba(29,185,84,0.18)", borderRadius: 6 }}>{c}</th>)}</tr>
           </thead>
           <tbody>
             {rows.map((row, ri) => (
               <tr key={ri}>
                 {row.map((v, ci) => {
                   const k = ri + "-" + cols[ci];
-                  return <td key={k} onClick={() => toggle(k)} className="px-2 py-1 cursor-pointer border border-zinc-200 dark:border-zinc-700" style={cellStyle(k)}>{v === "" ? "\u00A0" : v}</td>;
+                  return <td key={k} onClick={() => toggle(k)} className="px-2 py-2 cursor-pointer font-mono text-xs hover:opacity-70" style={Object.assign({ borderRadius: 6, background: "rgba(127,127,127,0.10)" }, cellStyle(k))}>{checked ? (keys.includes(k) ? (flagged.includes(k) ? "✅ " : "⚠️ ") : (flagged.includes(k) ? "❌ " : "")) : (flagged.includes(k) ? "🚩 " : "")}{v === "" ? "\u00A0" : v}</td>;
                 })}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="mt-3 flex items-center gap-2">
-        <button onClick={() => setChecked(true)} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Check</button>
-        <button onClick={reset} className="px-3 py-1 rounded-md border border-zinc-300 dark:border-zinc-600 text-sm">Reset</button>
-        <span className="text-sm">{flagged.length} cells flagged</span>
+      <div className="px-4 pb-4 flex flex-wrap items-center gap-2">
+        <button onClick={() => setChecked(true)} className="px-4 py-2 rounded-lg text-sm font-semibold" style={{ background: "#1DB954", color: "white" }}>Check my answers</button>
+        <button onClick={reset} className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 text-sm">Start over</button>
       </div>
       {checked ? (
-        <div className="mt-3 text-sm">
-          <p className="m-0 font-semibold">You found {found} of {keys.length} problems{wrong > 0 ? ", with " + wrong + " false alarm" + (wrong === 1 ? "" : "s") : ""}.</p>
-          <p className="m-0 mt-1 opacity-70">Green = found, orange outline = missed, red = not actually an error.</p>
-          <ul className="mt-2">
+        <div className="px-4 pb-4 text-sm">
+          <div className="rounded-xl px-4 py-3" style={{ background: "rgba(29,185,84,0.12)" }}>
+            <p className="m-0 text-lg font-bold">{found === keys.length && wrong === 0 ? "🎉 Perfect detective work!" : found >= 4 ? "👏 Nice catch!" : "🔎 Good start, take another look"}</p>
+            <p className="m-0 mt-1">You found {found} of {keys.length}{wrong > 0 ? ", with " + wrong + " false alarm" + (wrong === 1 ? "" : "s") : ""}. ✅ found, ⚠️ missed, ❌ not an error.</p>
+          </div>
+          <p className="mt-3 mb-1 font-semibold">What was hiding in the data</p>
+          <ul className="m-0">
             {keys.map((k) => <li key={k}>{problems[k]}</li>)}
           </ul>
         </div>
