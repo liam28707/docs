@@ -47,16 +47,10 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:support@mintlify.com"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "ACM",
+      "href": "https://youtu.be/xvFZjo5PgG0?si=f6tV1iR7DMOWc_uF"
     }
   },
   "contextual": {
