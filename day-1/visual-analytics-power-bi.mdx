@@ -146,25 +146,31 @@ Every pattern you spot in a chart is a *hypothesis* about which features drive p
 
 ## Mini-demo: California Housing
 
-Before touching Spotify, we practise on something simpler. The **California Housing** dataset is built into Google Colab at `/content/sample_data/california_housing_train.csv`.
+Before touching Spotify, we practice on something simpler. The **California Housing** dataset is built into Google Colab at `/content/sample_data/california_housing_train.csv`.
 
 <Steps>
   <Step title="Get the file">
-    Download the [california_housing_train.csv](https://app.mintlify.com/banana-bus-0370d73f/banana-bus-0370d73f/&#x7E;/0f4a28de-7f22-49df-8531-1637ed13709d) dataset directly, or in Colab, open the Files panel, go to `sample_data`, and download it from there.
+    Download the [california_housing_train.csv](https://raw.githubusercontent.com/ageron/handson-ml/master/datasets/housing/housing.csv) dataset directly, or in Colab, open the Files panel on the left sidebar, go to `sample_data`, and download it from there.
   </Step>
-  <Step title="Load it">
-    Power BI Desktop → **Get data** → **Text/CSV** → select the file → **Load**.
+  <Step title="Load it into the Power BI Web App">
+    Go to **app.powerbi.com** and open your Workspace. Click **New** → **Upload a file** → select your CSV. Once loaded, click the dataset and select **Create a report** → **Start from scratch**.
   </Step>
-  <Step title="Make a map-like scatter plot">
-    Add a **Scatter chart**. Put `longitude` on X, `latitude` on Y, and `median_house_value` in **Size** (or Color saturation). Set the values to **Average** rather than Sum.
+  <Step title="Build The Map (Scatter Chart)">
+    Add a **Scatter chart**. Put `longitude` on the **X-axis** and `latitude` on the **Y-axis** 
+
+    _Format visual menu → Markers → Color → **fx** to apply a color gradient based on Average median_house_value)._
   </Step>
-  <Step title="Add a KPI card">
-    Add a **Card** visual with `median_house_value` set to **Average**.
+  <Step title="Add the Headlines (KPI Cards)">
+    Add a **Card** visual to the blank canvas. Drag `median_house_value` into the card, click the dropdown arrow in the build pane, and change it from Sum to **Average**. Add a second **Card** next to it for `median_income` (also set to **Average**).
+  </Step>
+  <Step title="Add the Interactive Slicer">
+    Add a **Slicer** visual to the canvas. Drag `housing_median_age` into it to create an interactive slider bar. Slide it to only show brand new houses and watch the map and KPI cards automatically recalculate!
+  </Step>
+  <Step title="Try it out ">
+    Take some time to familiarize yourself and try building your own simple dashboard.
   </Step>
 </Steps>
 
 {/* ILLUSTRATION I-09: Screenshot of the finished housing scatter plot, showing the outline of California emerging from the dots, with callouts on step 3 settings. */}
 
-<Check>
-You should see the shape of California appear, with expensive areas clustered along the coast. Data tells a visual story before any model is involved.
-</Check>
+![Image](/images/image-2.png "Image")
