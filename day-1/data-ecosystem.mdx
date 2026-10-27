@@ -217,6 +217,21 @@ export const SpotTheProblem = () => {
 
 <SpotTheProblem />
 
-<Accordion title="Check yourself">
-Put these in order: visualize, extract, model, transform. **Extract, transform, model, visualize.**
-</Accordion>
+export const Reveal = ({ question, answer }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="my-3 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="m-0 font-medium">{question}</p>
+      <button onClick={() => setShow(!show)} className="mt-2 px-3 py-1 rounded-md text-sm font-semibold" style={{ background: show ? "transparent" : "#1DB954", color: show ? "inherit" : "white", border: "1px solid #1DB954" }}>{show ? "Hide answer" : "Reveal answer"}</button>
+      {show ? <p className="m-0 mt-2 text-sm">{answer}</p> : null}
+    </div>
+  );
+};
+
+##  Check yourself
+
+Think about each question first, then reveal the answer.
+
+<Reveal question="Put these four stages in order: visualize, extract, model, transform." answer="Extract, transform, model, visualize." />
+
+<Reveal question="Why can a duplicated track hurt a model's predictions?" answer="It makes one song look more common than it is, so the model may over-weight that song's features." />

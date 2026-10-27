@@ -49,6 +49,21 @@ These predictions are on tracks the model **already saw while training**, so the
 
 In a real company the export step is automated: the model runs on a schedule, writes to a warehouse, and Power BI refreshes by itself. Analysts and executives interact only with the dashboard. Remember the **drift** from Day 1: someone still needs to monitor whether those predictions stay accurate.
 
-<Accordion title="Check yourself">
-Why is the dashboard the "interface" of a model for most business users? **Because they need to explore results visually and interactively, without writing code.**
-</Accordion>
+export const Reveal = ({ question, answer }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="my-3 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="m-0 font-medium">{question}</p>
+      <button onClick={() => setShow(!show)} className="mt-2 px-3 py-1 rounded-md text-sm font-semibold" style={{ background: show ? "transparent" : "#1DB954", color: show ? "inherit" : "white", border: "1px solid #1DB954" }}>{show ? "Hide answer" : "Reveal answer"}</button>
+      {show ? <p className="m-0 mt-2 text-sm">{answer}</p> : null}
+    </div>
+  );
+};
+
+## 🧠 Check yourself
+
+Think about each question first, then reveal the answer.
+
+<Reveal question="Why is a dashboard the main interface to a model for most business users?" answer="They need to explore results visually and interactively, without writing code." />
+
+<Reveal question="Why shouldn't you use predictions on tracks the model trained on to report its accuracy?" answer="The model has already seen those tracks, so the results look better than they would on new songs. Use the held-out test set instead." />

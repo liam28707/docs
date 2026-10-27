@@ -73,6 +73,19 @@ export const DriftDemo = () => {
 
 <DriftDemo />
 
-<Accordion title="Check yourself">
-Why can a model that was 85% accurate last year be only 70% accurate today? **The world changed (drift) and the model learned an older pattern. It needs retraining.**
-</Accordion>
+export const Reveal = ({ question, answer }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="my-3 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="m-0 font-medium">{question}</p>
+      <button onClick={() => setShow(!show)} className="mt-2 px-3 py-1 rounded-md text-sm font-semibold" style={{ background: show ? "transparent" : "#1DB954", color: show ? "inherit" : "white", border: "1px solid #1DB954" }}>{show ? "Hide answer" : "Reveal answer"}</button>
+      {show ? <p className="m-0 mt-2 text-sm">{answer}</p> : null}
+    </div>
+  );
+};
+
+## Check yourself
+
+Think about each question first, then reveal the answer.
+
+<Reveal question="Why can a model that was 85% accurate last year be only 70% accurate today?" answer="The world changed (drift) and the model learned an older pattern, so it needs retraining." />

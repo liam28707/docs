@@ -132,8 +132,23 @@ export const CouncilDemo = () => {
 
 We will use a **random forest** on Day 2.
 
-<Accordion title="Check yourself">
-1. Is "predict whether a song goes viral" supervised or unsupervised? **Supervised.**
-2. Why do we hold back a test set? **To check the model works on data it hasn't seen, and catch overfitting.**
-3. Classification or regression: predicting the exact popularity number? **Regression.**
-</Accordion>
+export const Reveal = ({ question, answer }) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="my-3 rounded-xl border border-zinc-200 dark:border-zinc-700 p-4">
+      <p className="m-0 font-medium">{question}</p>
+      <button onClick={() => setShow(!show)} className="mt-2 px-3 py-1 rounded-md text-sm font-semibold" style={{ background: show ? "transparent" : "#1DB954", color: show ? "inherit" : "white", border: "1px solid #1DB954" }}>{show ? "Hide answer" : "Reveal answer"}</button>
+      {show ? <p className="m-0 mt-2 text-sm">{answer}</p> : null}
+    </div>
+  );
+};
+
+##  Check yourself
+
+Think about each question first, then reveal the answer.
+
+<Reveal question="Is predicting whether a song goes viral supervised or unsupervised learning?" answer="Supervised, because every training example comes with the right answer." />
+
+<Reveal question="Why do we hold back a test set?" answer="To check the model works on data it hasn't seen, and to catch overfitting." />
+
+<Reveal question="Classification or regression: predicting the exact popularity number?" answer="Regression, because the target is a number rather than a category." />
