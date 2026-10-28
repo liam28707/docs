@@ -130,6 +130,49 @@ export const ChartChooser = () => {
 - **Scatter plot:** each dot is a song; position shows two audio features.
 - **KPI card:** the share of tracks that count as viral.
 
+## KPIs
+
+A **KPI** (Key Performance Indicator) is one number that tells you, at a glance, how well something is going. On a dashboard, KPIs sit at the top because they answer the first question anyone asks: _"So, how are we doing?"_
+
+A KPI is not just any number. A good one is:
+
+- **Meaningful:** tied to a real goal. "Share of tracks that go viral" matters to a record label; "number of columns in the file" does not.
+- **Single:** one number, one idea.
+- **Comparable:** it means more with context, such as a target, last month, or another group.
+- **Simple to read:** a person should get it in about three seconds.
+
+### KPIs for our Spotify dashboard
+
+| KPI | What it answers | Calculation in Power BI |
+| --- | --- | --- |
+| **Total tracks** | How big is our catalogue? | Count of `track_id` |
+| **Average popularity** | How popular is a typical track? | Average of `popularity` |
+| **Viral share** | What percentage of tracks go viral? | A measure (built on Day 2) |
+| **Average energy of viral tracks** | Do viral tracks sound different? | Average of `energy`, filtered to viral |
+
+<Note>
+  Every KPI is a **measure** (a calculated number), but not every measure deserves to be a KPI. Choose the few that drive decisions.
+</Note>
+
+### Card vs KPI visual
+
+Power BI has two ways to show a headline number:
+
+|  | **Card** | **KPI visual** |
+| --- | --- | --- |
+| Shows | One value | A value, a target, and a trend |
+| Needs | Just the measure | A measure, a target, and a time or category axis |
+| Best for | "How many?" and "How much?" | "Are we hitting our goal?" |
+
+We use **Cards** in this workshop because they are the simplest. The KPI visual becomes useful once you have a goal to compare against, for example _"Our aim is 15% viral share"_.
+
+### Common KPI mistakes
+
+- **Wrong aggregation.** Summing `popularity` gives a meaningless number. Average it.
+- **No context.** "Viral share: 12%" is hard to judge. Is that high or low? Add a target, or compare genres using the slicer.
+- **Too many.** Five to six cards is plenty. More just hides the story.
+- **Vanity numbers.** A big total that nobody can act on is not a KPI.
+
 <Note>
 **Heads-up about the dataset:** it has a `popularity` score (0–100) but no raw stream counts, so wherever you see "streams" in other material, we use **popularity** instead.
 </Note>

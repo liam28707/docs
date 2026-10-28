@@ -78,13 +78,84 @@ export const OverfitDemo = () => {
 A model with great training accuracy but poor testing accuracy has not learned anything useful. Always judge a model on the **test** set.
 </Warning>
 
-## Two models
+## Models 
 
-### Linear / logistic regression: the line of best fit
-Draw the single straight line that best fits the points. For a yes/no target, the logistic version bends this line into a probability between 0 and 1. It is simple, fast and easy to explain, but it can only capture straight-line relationships.
+There is no single best model. Each one learns patterns in a different way, and the right choice depends on your data and your goal. Here are five common ones for our "will this track go viral?" problem.
 
-### Random forest: a council of decision trees
-A **decision tree** asks a chain of yes/no questions: *Is energy above 0.6? Is acousticness below 0.3?* One tree can be unreliable. A **random forest** builds hundreds of slightly different trees and lets them **vote**. The crowd is usually wiser than any one tree.
+### 1. Logistic regression: the weighted score
+
+Despite the name, this is a **classification** model. It gives each feature a weight, adds up a score, and squashes that score into a probability between 0 and 1.
+
+- **Spotify example:** high energy adds points, high acousticness subtracts points, and the total becomes "62% chance of going viral".
+- **Strengths:** fast, simple, and easy to explain, because you can read the weights.
+- **Weaknesses:** it only captures straight-line relationships.
+- **Use it when:** you want a quick, understandable baseline.
+
+### 2. k-Nearest Neighbors (k-NN): ask your neighbors
+
+To judge a new song, it finds the _k_ most similar songs in the training data and takes a vote.
+
+- **Spotify example:** a new track sounds like five known songs. Four were viral, so it predicts viral.
+- **Strengths:** very intuitive, with no real "training" step.
+- **Weaknesses:** slow on huge datasets, and sensitive to features on different scales (tempo goes up to 200 while danceability stops at 1).
+- **Use it when:** you have a small dataset and similarity makes sense.
+
+### 3. Decision tree: a flowchart of questions
+
+It asks a chain of yes/no questions: _Is energy above 0.6? Is acousticness below 0.3?_ Each answer leads to another question until it reaches a decision.
+
+- **Strengths:** you can draw it and follow it, and it needs little data preparation.
+- **Weaknesses:** one tree tends to **overfit**. It memorizes the training data.
+- **Use it when:** explanation matters more than top accuracy.
+
+### 4. Random forest: a council of trees
+
+It builds hundreds of slightly different trees, each trained on a random slice of the data, and lets them **vote**. Averaging many opinions cancels out individual mistakes.
+
+- **Strengths:** accurate, resistant to overfitting, handles messy data, and shows which features matter most.
+- **Weaknesses:** harder to explain than one tree, and slower to train.
+- **Use it when:** you want a strong, dependable model without much tuning. **This is the model we use on Day 2.**
+
+### 5. Gradient boosting: learning from mistakes
+
+Trees are built **one after another**, and each new tree focuses on the songs the previous trees got wrong. Together they gradually improve. Popular versions include XGBoost and LightGBM.
+
+- **Strengths:** often the most accurate on table-style data.
+- **Weaknesses:** more settings to tune, and it can overfit if pushed too hard.
+- **Use it when:** you want maximum accuracy and are comfortable tuning.
+
+### Side by side
+
+| Model | Idea | Easy to explain? | Typical accuracy | scikit-learn class |
+| --- | --- | --- | --- | --- |
+| Logistic regression | Weighted score | Very | Medium | `LogisticRegression` |
+| k-NN | Vote of similar songs | Yes | Medium | `KNeighborsClassifier` |
+| Decision tree | Flowchart of questions | Yes | Medium | `DecisionTreeClassifier` |
+| Random forest | Many trees vote | Somewhat | High | `RandomForestClassifier` |
+| Gradient boosting | Trees fix each other's mistakes | Less | Highest | `HistGradientBoostingClassifier` |
+
+<Tip>
+  Start simple. A model you can explain, and that performs close to the fancy one, is often the better business choice.
+</Tip>
+
+### Supervised vs unsupervised: where do these fit?
+
+All five models above are **supervised**, since they learn from tracks with a known label. An unsupervised example is **k-means clustering**, which groups songs that sound alike with no labels at all. A label might use it to discover "types" of tracks before deciding what to predict.
+
+## How do we know a model is good?
+
+Accuracy alone can mislead. If only 10% of tracks are viral, a model that says "not viral" every time is 90% accurate and completely useless. So we also look at:
+
+- **Confusion matrix:** a 2 by 2 table of right and wrong predictions.
+- **Precision:** of the tracks the model called viral, how many really were?
+- **Recall:** of the tracks that really were viral, how many did the model find?
+
+|  | Predicted viral | Predicted not viral |
+| --- | --- | --- |
+| **Actually viral** | Hit (true positive) | Missed hit (false negative) |
+| **Actually not viral** | False alarm (false positive) | Correct rejection (true negative) |
+
+A record label might care most about **recall** (don't miss a future hit) or **precision** (don't waste marketing on a flop). The right metric depends on the business goal.
 
 export const CouncilDemo = () => {
   const [energy, setEnergy] = useState(0.7);
