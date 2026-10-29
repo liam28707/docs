@@ -6,6 +6,30 @@ icon: "route"
 
 A model sitting in a notebook helps nobody. To be useful, it has to be **deployed** so other systems can use it.
 
+## The model's life after training
+
+Training is only the middle of the story. A complete workflow looks like this:
+
+<Steps>
+  <Step title="Collect and prepare data">
+    Gather and clean the data (Session 2).
+  </Step>
+  <Step title="Train and test">
+    Build the model and check it on unseen data (Session 4).
+  </Step>
+  <Step title="Deploy">
+    Make the model available to people or systems.
+  </Step>
+  <Step title="Monitor">
+    Track whether predictions stay accurate.
+  </Step>
+  <Step title="Retrain">
+    Update the model when performance drops, then repeat.
+  </Step>
+</Steps>
+
+This loop is often called **MLOps**: machine learning plus the operational habits that keep it running.
+
 ## Deployment and APIs
 
 The most common approach is to wrap the model in an **API** (Application Programming Interface): a doorway other software can knock on.
@@ -15,6 +39,23 @@ The most common approach is to wrap the model in an **API** (Application Program
 3. It sends back a prediction, for example "62% chance of going viral".
 
 Getting an answer on demand like this is called **real-time inference**.
+
+### Batch vs real-time predictions
+
+|  | Batch | Real-time |
+| --- | --- | --- |
+| **When** | On a schedule (nightly, weekly) | The moment someone asks |
+| **Example** | Score every new release each Monday | A label's app scores one demo upload instantly |
+| **Pros** | Simple, cheap | Instant answers |
+| **Cons** | Results can be stale | More complex infrastructure |
+
+Our Day 2 export to Power BI is a small example of **batch** scoring.
+
+### Other ways models get used
+
+- **Inside an app** (a recommendation shown to a listener).
+- **In a spreadsheet or dashboard** (predictions loaded into Power BI).
+- **As a report** (a monthly list of likely hits).
 
 {/* ILLUSTRATION I-13: Animated request/response flow: App → API → Model → App, with a sample JSON request and response that students can edit (change energy and see a new fake probability). */}
 
@@ -81,3 +122,14 @@ export const Reveal = ({ question, answer }) => {
     </div>
   );
 };
+
+### Responsible deployment checklist
+
+- Do we know what the model should **not** be used for?
+- Does it perform fairly across genres and not just the popular ones?
+- Can a human review decisions that matter?
+- Who is responsible when it is wrong?
+
+<Note>
+  A model that predicts "viral" is a tool to support a decision, not to replace the people who make it.
+</Note>

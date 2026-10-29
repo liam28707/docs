@@ -4,6 +4,24 @@ description: "Where data lives, how it flows, and why cleaning matters."
 icon: "database"
 ---
 
+## What kind of data are we dealing with?
+
+| Type | What it looks like | Example |
+| --- | --- | --- |
+| **Structured** | Neat rows and columns | Our Spotify CSV |
+| **Semi-structured** | Flexible, labelled fields (JSON, XML) | An app's API response |
+| **Unstructured** | No fixed layout | Audio files, images, social posts |
+
+Today's data is structured. The audio features (`danceability`, `energy` and so on) were _computed_ from unstructured audio files.
+
+### Common file formats
+
+| Format | Best for | Notes |
+| --- | --- | --- |
+| **CSV** | Simple tables | Human-readable, but no data types and large files are slow |
+| **JSON** | Data from web APIs | Handles nested information |
+| **Parquet** | Big data in warehouses | Compressed and fast to read |
+
 ## Where does data live?
 
 | | On-premises | Cloud data warehouse |
@@ -124,6 +142,35 @@ Examples you will meet in the Spotify data:
 <Warning>
 **The cost of bad data.** If duplicates make one song look five times as common, your model may "learn" that its features matter five times more than they do. A wrong prediction leads to a wrong decision about where to spend money, and that is a real cost.
 </Warning>
+
+### What does "good data" mean?
+
+| Quality | Question | Spotify example |
+| --- | --- | --- |
+| **Completeness** | Is anything missing? | A blank `track_name` |
+| **Validity** | Are values allowed? | `danceability` of 1.7 (the scale is 0 to 1) |
+| **Uniqueness** | Is each item counted once? | The same `track_id` in several genres |
+| **Consistency** | Does it agree everywhere? | `explicit` stored as both "True" and "1" |
+| **Accuracy** | Is it actually correct? | A tempo of 2000 BPM |
+| **Timeliness** | Is it up to date? | Popularity scores from years ago |
+
+### How we fix common problems
+
+| Problem | Typical fix |
+| --- | --- |
+| Missing values | Remove the row, or fill it in (for example, with the average) |
+| Duplicates | Keep one row per unique ID |
+| Wrong data type | Convert the column (text to number) |
+| Impossible values | Remove them, or check the source |
+| Outliers | Investigate before deciding: they may be real |
+
+<Tip>
+  Never clean blindly. Record each step you take so someone else can repeat it and trust the result. Power Query does this automatically in its "Applied steps" list.
+</Tip>
+
+### Data and responsibility
+
+Even harmless-looking data can be sensitive. Before using a dataset, ask where it came from, whether it contains personal information, and whether you have permission to use it. Our Spotify dataset describes songs, not listeners, which is part of why it's safe to use in a workshop.
 
 export const SpotTheProblem = () => {
   const cols = ["track_id", "track_name", "track_genre", "popularity", "danceability", "tempo"];

@@ -58,11 +58,41 @@ export const RolesRoadmap = () => {
 In this workshop you will do a taste of all three: clean data (engineering), build a dashboard (analytics) and train a model (science).
 </Tip>
 
+### How the three roles work together
+
+The roles are links in a chain. Each one depends on the one before it.
+
+| Stage | Who | Hands over |
+| --- | --- | --- |
+| Collect and store data | Data engineer | Clean, reliable tables |
+| Explore and explain data | Data analyst | Dashboards and insights |
+| Predict what happens next | Data scientist | A model and its predictions |
+
+If the engineer's pipeline breaks, the dashboard is wrong. If the dashboard is wrong, the model learns from bad information. That is why all three roles need a basic understanding of each other.
+
+### Skills at a glance
+
+|  | Engineering | Analytics | Science |
+| --- | --- | --- | --- |
+| **Core question** | Is the data available and correct? | What happened, and why? | What will happen next? |
+| **Main skills** | SQL, Python, cloud platforms | SQL, Power BI, Excel, storytelling | Python, statistics, machine learning |
+| **Main output** | Pipelines and tables | Dashboards and reports | Models and forecasts |
+| **Mindset** | Reliability | Clarity | Experimentation |
+
 ## How do labels quantify a "hit"?
 
 Every day, around 100,000 new tracks are uploaded to streaming platforms. Almost nobody hears most of them. A record label has to decide where to put its marketing money.
 
 Songs don't come with a "hit" label, so we need to define one. We will say a track is **viral** if its popularity score is above a threshold (you will choose it on Day 2). That turns the business problem into a yes/no prediction.
+
+### What a good prediction problem looks like
+
+Before building a model, ask:
+
+1. **Is there a decision it will change?** (Where to spend marketing money.)
+2. **Do we have past examples with known outcomes?** (Tracks with popularity scores.)
+3. **Can we measure the inputs before the outcome happens?** (Audio features exist before release.)
+4. **How will we know it worked?** (Accuracy on tracks the model has never seen.)
 
 ## What you will build on Day 2
 
@@ -71,6 +101,17 @@ Songs don't come with a "hit" label, so we need to define one. We will say a tra
 Here is a preview of the end result: a dashboard exploring popularity, and a model where you move sliders for a new song's features and watch the predicted probability of going viral change.
 
 (Image To be added)
+
+### Key terms you will hear this week
+
+| Term | Plain-English meaning |
+| --- | --- |
+| **Dataset** | A table of data: rows are items, columns are details |
+| **Feature** | An input column the model uses |
+| **Target** | The column we want to predict |
+| **Dashboard** | A page of linked charts you can filter |
+| **Model** | A pattern-finding recipe learned from data |
+| **Prediction** | The model's estimate for something new |
 
 export const Reveal = ({ question, answer }) => {
   const [show, setShow] = useState(false);
