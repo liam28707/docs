@@ -1,10 +1,12 @@
 ---
 title: "Session 2 — Data Ingestion & Power BI Build"
-description: "Clean the data with Power Query, then build the dashboard step by step."
+description: "Clean the data with Power Query, then build a dark, Spotify-style dashboard step by step."
 icon: "table"
 ---
 
-## Part 1: Load and clean with Power Query 
+**Duration:** 40 minutes
+
+## Part 1: Load and clean with Power Query (15 min)
 
 Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L**oad.
 
@@ -26,8 +28,9 @@ Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L
   </Step>
   <Step title="Add the target column">
     **Add Column** → **Custom Column**, name it `viral_label`, formula:
+
     ```text
-    if [popularity] >= 58.0 then "Viral" else "Not viral"
+    if [popularity] >= 60 then "Viral" else "Not viral"
     ```
   </Step>
   <Step title="Load">
@@ -38,36 +41,240 @@ Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L
 {/* ILLUSTRATION I-16: Before/after Power Query screenshot pair with a draggable divider. Annotate each step number on the "applied steps" panel. */}
 
 <Note>
-The threshold `58.0` is a starting choice. Facilitators: check what share of tracks it labels viral on this data and adjust (Session 4 shows how). The aim is a minority class large enough for the model to learn from.
+  The threshold `60` is a starting choice. On the cleaned data (about 73,600 unique tracks) it labels roughly 12–13% of tracks as viral, which leaves enough viral examples for a model to learn from. If your share is very different, adjust the number, and use the **same number** in Power BI and Colab.
 </Note>
 
-## Part 2: Build the dashboard 
+## Part 2: Build the dashboard (25 min)
+
+We are building one dark, single-page dashboard with three panels, in the style of a streaming app.
+
+<DashboardWireframe />
+
+| Panel | What it answers |
+| --- | --- |
+| **Overview** | How big is the catalogue, and how much of it goes viral? |
+| **Genres** | Which genres are most popular? |
+| **Sound** | What do viral tracks sound like compared with the rest? |
+
+<Tip>
+  **Facilitators:** the styling steps are the slowest part. Hand students a starter `.pbix` with the theme, the dark page and the three empty panels already set up, so they spend the 25 minutes building visuals rather than formatting.
+</Tip>
+
+### Step 0: Apply the theme (2 min)
+
+A theme restyles every visual at once, so nothing has a white background on a dark page.
 
 <Steps>
-  <Step title="KPI cards: the big picture">
-    Add three **Card** visuals: **Count of** `track_id` (total tracks), **Average of** `popularity`, and a viral share. For the viral share create a measure: **Modeling** → **New measure**:
-    ```text
-    Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 58)), COUNTROWS('dataset'))
-    ```
-    Format it as a percentage.
+  <Step title="Save the theme file">
+    Open the **Theme file** box at the end of this page, copy the text into Notepad, and save it as `spotify-dark.json`.
   </Step>
-  <Step title="Bar chart: which genres are most popular?">
-    **Clustered bar chart**. Y-axis: `track_genre`. X-axis: **Average of** `popularity`. In the Filters pane set **Top N** to 10 by that value.
+  <Step title="Import it">
+    **View** → **Themes** → **Browse for themes** → select `spotify-dark.json`.
   </Step>
-  <Step title="Scatter plot: Energy vs Happiness">
-    **Scatter chart**. X: **Average of** `energy`. Y: **Average of** `valence` (valence is the "happiness" of a track). **Play Axis:** `track_name`. **Size:** **Average of** `popularity`. **Legend:** `viral_label`.
-
-    <Tip>
-      With 100,000+ dots the chart becomes unreadable, which is exactly why the next step exists.
-    </Tip>
-  </Step>
-  <Step title="Slicer: filter by genre">
-    **Slicer** visual with `track_genre`. Pick two or three genres and watch every visual update. This interactivity is the whole point of a dashboard.
+  <Step title="Set the canvas size">
+    Click an empty area of the page, then **Format page** → **Page size** → **16:9** (1280 × 720).
   </Step>
 </Steps>
 
-{/* ILLUSTRATION I-17: Annotated screenshot of the finished dashboard with numbered callouts matching steps 1–4 above, plus a downloadable .pbix "answer key". */}
+### Step 1: Group the genres into families (3 min)
+
+There are 114 genres, far too many for a slicer or a readable chart. We will group them into a handful of **families**.
+
+Right-click your table in the **Data** pane → **New column**, then paste:
+
+```text
+Genre Family =
+SWITCH(
+    TRUE(),
+    'dataset'[track_genre] IN {"pop", "indie-pop", "power-pop", "synth-pop", "k-pop", "j-pop", "cantopop", "mandopop", "pop-film", "j-idol"}, "Pop",
+    'dataset'[track_genre] IN {"rock", "alt-rock", "alternative", "hard-rock", "psych-rock", "punk-rock", "punk", "grunge", "emo", "goth", "industrial", "ska", "rockabilly", "rock-n-roll", "j-rock", "indie", "guitar", "metal", "heavy-metal", "black-metal", "death-metal", "metalcore", "grindcore", "hardcore"}, "Rock & Metal",
+    'dataset'[track_genre] IN {"hip-hop", "r-n-b", "soul", "funk", "groove", "trip-hop", "gospel"}, "Hip-hop & R&B",
+    'dataset'[track_genre] IN {"edm", "electro", "electronic", "dance", "club", "house", "deep-house", "chicago-house", "progressive-house", "techno", "minimal-techno", "detroit-techno", "trance", "hardstyle", "dubstep", "drum-and-bass", "breakbeat", "idm", "dub", "garage", "disco", "j-dance", "party"}, "Electronic & Dance",
+    'dataset'[track_genre] IN {"latin", "latino", "reggaeton", "salsa", "samba", "pagode", "sertanejo", "forro", "mpb", "brazil", "tango", "spanish", "reggae", "dancehall", "afrobeat", "world-music", "indian", "french", "german", "swedish", "turkish", "iranian", "malay"}, "Latin & World",
+    'dataset'[track_genre] IN {"acoustic", "ambient", "chill", "sleep", "study", "new-age", "piano", "sad", "singer-songwriter", "songwriter", "folk", "country", "bluegrass", "honky-tonk"}, "Chill & Acoustic",
+    'dataset'[track_genre] IN {"jazz", "blues", "classical", "opera", "show-tunes"}, "Jazz & Classical",
+    "Other"
+)
+```
+
+<Note>
+  If your table isn't called `dataset`, replace `'dataset'` with its name. Any genre not listed falls into **Other**.
+</Note>
+
+**Check it:** add a quick **Table** visual with `Genre Family` and **Count of** `track_id`. You should see eight families, with **Other** as the smallest group. Delete the table afterwards.
+
+### Step 2: Lay out the page (3 min)
+
+Add three **Rounded rectangle** shapes (**Insert** → **Shapes**) as panel backgrounds, then place everything using **Format** → **General** → **Properties** → **Size and position**. Using the same numbers keeps the page tidy and aligned.
+
+| Item | X | Y | Width | Height |
+| --- | --- | --- | --- | --- |
+| Title text box | 20 | 12 | 520 | 56 |
+| Genre family slicer | 560 | 14 | 520 | 56 |
+| Explicit dropdown | 1096 | 14 | 164 | 56 |
+| Panel 1 (Overview) | 20 | 84 | 402 | 616 |
+| Panel 2 (Genres) | 438 | 84 | 402 | 616 |
+| Panel 3 (Sound) | 856 | 84 | 402 | 616 |
+
+Give each panel shape the fill `#181818`, and add a small text label ("OVERVIEW", "GENRES", "SOUND") near the top of each.
+
+### Step 3: Cards, the headline numbers (4 min)
+
+Add three **Card** visuals in Panel 1, side by side (each about 120 wide and 90 tall, at Y 124):
+
+- **Count of** `track_id`, renamed "Tracks"
+- **Average of** `popularity` (not Sum), renamed "Avg popularity"
+- A **Viral Share** measure. **Modeling** → **New measure**:
+
+```text
+Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 60)), COUNTROWS('dataset'))
+```
+
+Format it as a percentage.
+
+### Step 4: Donut, viral vs not viral (2 min)
+
+**Donut chart** under the cards. **Legend:** `viral_label`. **Values:** **Count of** `track_id`. In **Format visual** → **Slices** → **Colors**, set Viral to green (`#1DB954`) and Not viral to grey (`#535353`). Turn on detail labels as **Percent of total**.
+
+### Step 5: Which genres are most popular? (3 min)
+
+In Panel 2, add a **Clustered bar chart**. **Y-axis:** `track_genre`. **X-axis:** **Average of** `popularity`. In the **Filters** pane set **Top N** to 10 by that value, then switch on **Data labels**.
+
+### Step 6: Energy vs happiness by genre (4 min)
+
+In Panel 3, add a **Scatter chart** with these fields:
+
+| Well | Field |
+| --- | --- |
+| **X Axis** | Average of `energy` |
+| **Y Axis** | Average of `valence` (the "happiness" of a track) |
+| **Details** | `track_genre` |
+| **Size** | Count of `track_id` |
+| **Legend** | `Genre Family` |
+| **Play Axis** | _leave empty_ |
+
+Now each bubble is a **genre**, coloured by family, so you get a readable cloud of about 114 bubbles instead of 73,000 dots.
+
+<Warning>
+  **Only see one bubble, with a big word floating on the chart and a play slider underneath?** A field is in the **Play Axis** well instead of **Details**. Drag it out of Play Axis and into Details. The play axis shows one item at a time, which is why only one bubble appears.
+</Warning>
+
+### Step 7: What do viral tracks sound like? (3 min)
+
+Under the scatter plot add a **Clustered column chart**. **X-axis:** `viral_label`. **Y-axis:** add four fields, each set to **Average**: `energy`, `danceability`, `valence`, `acousticness`. Now you can compare two groups across four audio features at a glance. This chart is the best evidence for your hypotheses in the next session.
+
+### Step 8: Slicers (3 min)
+
+<Steps>
+  <Step title="Genre family slicer">
+    Add a **Slicer** using `Genre Family`. In **Format visual** → **Slicer settings** → **Options** → **Style**, choose **Tile**. Eight buttons fit neatly along the top.
+  </Step>
+  <Step title="Explicit slicer">
+    Add another **Slicer** using `explicit`, and set its style to **Dropdown**.
+  </Step>
+  <Step title="Try it">
+    Hold **Ctrl** and click two families. Every visual updates.
+  </Step>
+</Steps>
 
 <Check>
-Your dashboard should have three cards, a top-10 bar chart, a scatter plot coloured by viral/not viral, and a genre slicer that filters all of them.
+  Your dashboard should have three cards, a donut, a top-10 genre bar chart, a scatter plot of genre bubbles, a viral vs not-viral comparison, and two slicers that filter everything.
 </Check>
+
+{/* ILLUSTRATION I-17: Annotated screenshot of the finished dashboard with numbered callouts matching steps 3-8 above, plus a downloadable .pbix "answer key". */}
+
+## Make it yours (optional, 5 min)
+
+- Replace the title with your own question, such as "What makes a song go viral?", and add your name.
+- Add a one-line **headline insight** under the title.
+- Switch off the visual headers in **Format** → **General** → **Visual header**.
+- Take a screenshot to keep.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="A chart has a white background">
+    The theme wasn't applied. Re-import it from **View** → **Themes**, or set the visual's **Effects** → **Background** to `#181818`.
+  </Accordion>
+
+  <Accordion title="The slicer is too long or won't fit">
+    You're slicing by `track_genre` (114 values). Use `Genre Family` instead, with the **Tile** style.
+  </Accordion>
+
+  <Accordion title="Numbers look huge or meaningless">
+    A field is set to **Sum**. Click its dropdown in the Fields well and choose **Average**.
+  </Accordion>
+
+  <Accordion title="Bubbles all overlap in a corner">
+    Set both scatter axes to range 0 to 1: **Format visual** → **X axis** or **Y axis** → **Range**.
+  </Accordion>
+</AccordionGroup>
+
+<Accordion title="Theme file (copy into spotify-dark.json)">
+  ```json
+  {
+    "name": "Spotify Dark",
+    "dataColors": ["#1DB954", "#1ED760", "#14833B", "#9CA3AF", "#F59E0B", "#3B82F6", "#EC4899", "#8B5CF6"],
+    "background": "#181818",
+    "foreground": "#FFFFFF",
+    "foregroundNeutralSecondary": "#B3B3B3",
+    "tableAccent": "#1DB954",
+    "textClasses": {
+      "title": { "fontFace": "Segoe UI Semibold", "fontSize": 14, "color": "#FFFFFF" },
+      "label": { "fontFace": "Segoe UI", "fontSize": 11, "color": "#B3B3B3" },
+      "callout": { "fontFace": "Segoe UI Semibold", "fontSize": 28, "color": "#FFFFFF" }
+    },
+    "visualStyles": {
+      "*": {
+        "*": {
+          "background": [{ "show": true, "color": { "solid": { "color": "#181818" } }, "transparency": 0 }],
+          "border": [{ "show": true, "color": { "solid": { "color": "#2A2A2A" } }, "radius": 12 }],
+          "title": [{ "show": true, "fontColor": { "solid": { "color": "#FFFFFF" } }, "fontSize": 14 }],
+          "visualHeader": [{ "show": false }]
+        }
+      },
+      "page": {
+        "*": {
+          "background": [{ "color": { "solid": { "color": "#121212" } }, "transparency": 0 }]
+        }
+      }
+    }
+  }
+  ```
+</Accordion>
+
+export const DashboardWireframe = () => {
+  const gray = { background: "#1F1F1F", color: "#B3B3B3", border: "1px solid #2A2A2A" };
+  const green = { background: "rgba(29,185,84,0.18)", color: "#1DB954", border: "1px solid #1DB954" };
+  const box = "rounded-lg flex items-center justify-center text-center text-xs p-2";
+  const panel = "rounded-xl p-2 flex flex-col gap-2";
+  return (
+    <div className="my-6 rounded-2xl p-3" style={{ background: "#121212" }}>
+      <div className="flex gap-2 mb-2">
+        <div className={box + " h-10 flex-1"} style={green}>Title and subtitle</div>
+        <div className={box + " h-10 flex-1"} style={gray}>Genre family tiles (slicer)</div>
+        <div className={box + " h-10 w-24"} style={gray}>Explicit</div>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <div className={panel} style={{ background: "#181818" }}>
+          <p className="m-0 text-xs font-bold" style={{ color: "#FFFFFF" }}>OVERVIEW</p>
+          <div className="flex gap-1">
+            <div className={box + " h-12 flex-1"} style={green}>Tracks</div>
+            <div className={box + " h-12 flex-1"} style={green}>Avg pop.</div>
+            <div className={box + " h-12 flex-1"} style={green}>Viral %</div>
+          </div>
+          <div className={box + " h-44"} style={gray}>Donut: viral vs not viral</div>
+        </div>
+        <div className={panel} style={{ background: "#181818" }}>
+          <p className="m-0 text-xs font-bold" style={{ color: "#FFFFFF" }}>GENRES</p>
+          <div className={box + " h-60"} style={gray}>Top 10 genres by average popularity</div>
+        </div>
+        <div className={panel} style={{ background: "#181818" }}>
+          <p className="m-0 text-xs font-bold" style={{ color: "#FFFFFF" }}>SOUND</p>
+          <div className={box + " h-32"} style={gray}>Scatter: energy vs happiness (one bubble per genre)</div>
+          <div className={box + " h-28"} style={gray}>Viral vs not viral: sound profile</div>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -22,18 +22,18 @@ A good hypothesis names a **feature**, a **direction** and ideally a **size**, a
     *When I filter to ______, the viral share is ______ compared with ______, which suggests that ______ matters for going viral.*
   </Tab>
   <Tab title="Example">
-    *When I filter to the "pop" genre, the viral share is higher than for "classical", which suggests genre matters for going viral.*
+    *When I filter to the "Pop" family, the viral share is higher than for "Jazz & Classical", which suggests genre matters for going viral.*
   </Tab>
   <Tab title="Weak vs strong">
     **Weak:** "Energy matters."
 
-    **Strong:** "Viral tracks cluster at high energy and mid-to-high valence in the scatter plot."
+    **Strong:** "In the sound comparison chart, viral tracks have higher average danceability than non-viral ones."
   </Tab>
 </Tabs>
 
 export const HypothesisBuilder = () => {
   const features = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"];
-  const visuals = ["the scatter plot", "the genre bar chart", "the viral share card", "the genre slicer"];
+  const visuals = ["the viral vs not-viral sound chart", "the energy vs happiness scatter plot", "the genre bar chart", "the viral share card", "the genre family slicer"];
   const [f, setF] = useState("");
   const [d, setD] = useState("");
   const [v, setV] = useState("");
@@ -86,7 +86,7 @@ export const HypothesisBuilder = () => {
 
 ### Activity 
 
-In pairs, filter to three different genres and write down **two hypotheses** about which features drive the viral label. Keep them: in the next session the model will tell you which ones were right.
+In pairs, click three different **genre families** on your slicer and write down **two hypotheses** about which features drive the viral label. Use the viral vs not-viral sound chart as your main evidence. Keep them: in the next session the model will tell you which ones were right.
 
 <Warning>
 **Correlation is not causation.** If viral songs have high energy, that doesn't prove that raising a song's energy makes it viral. A dashboard shows *patterns*, not *reasons*.
