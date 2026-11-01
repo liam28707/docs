@@ -4,7 +4,7 @@ description: "Clean the data with Power Query, then build the dashboard step by 
 icon: "table"
 ---
 
-## Part 1: Load and clean with Power Query 
+## Part 1: Load and clean with Power Query
 
 Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L**oad.
 
@@ -26,6 +26,7 @@ Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L
   </Step>
   <Step title="Add the target column">
     **Add Column** → **Custom Column**, name it `viral_label`, formula:
+
     ```text
     if [popularity] >= 58.0 then "Viral" else "Not viral"
     ```
@@ -38,36 +39,120 @@ Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L
 {/* ILLUSTRATION I-16: Before/after Power Query screenshot pair with a draggable divider. Annotate each step number on the "applied steps" panel. */}
 
 <Note>
-The threshold `58.0` is a starting choice. Facilitators: check what share of tracks it labels viral on this data and adjust (Session 4 shows how). The aim is a minority class large enough for the model to learn from.
+  The threshold `58.0` is a starting choice. Facilitators: check what share of tracks it labels viral on this data and adjust (Session 4 shows how). The aim is a minority class large enough for the model to learn from.
 </Note>
 
-## Part 2: Build the dashboard 
+## Part 2: Build the dashboard
 
-<Steps>
-  <Step title="KPI cards: the big picture">
-    Add three **Card** visuals: **Count of** `track_id` (total tracks), **Average of** `popularity`, and a viral share. For the viral share create a measure: **Modeling** → **New measure**:
-    ```text
-    Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 58)), COUNTROWS('dataset'))
-    ```
-    Format it as a percentage.
-  </Step>
-  <Step title="Bar chart: which genres are most popular?">
-    **Clustered bar chart**. Y-axis: `track_genre`. X-axis: **Average of** `popularity`. In the Filters pane set **Top N** to 10 by that value.
-  </Step>
-  <Step title="Scatter plot: Energy vs Happiness">
-    **Scatter chart**. X: **Average of** `energy`. Y: **Average of** `valence` (valence is the "happiness" of a track). **Play Axis:** `track_name`. **Size:** **Average of** `popularity`. **Legend:** `viral_label`.
+You will build this dashboard in a **starter template** that your facilitator gives you.
 
-    <Tip>
-      With 100,000+ dots the chart becomes unreadable, which is exactly why the next step exists.
-    </Tip>
-  </Step>
-  <Step title="Slicer: filter by genre">
-    **Slicer** visual with `track_genre`. Pick two or three genres and watch every visual update. This interactivity is the whole point of a dashboard.
-  </Step>
-</Steps>
+{/* ILLUSTRATION I-17: Screenshot of the finished dashboard (one dark page: Spotify logo, Genre Family and Explicit slicers across the top, then OVERVIEW, GENRES and SOUND panels). */}
 
-{/* ILLUSTRATION I-17: Annotated screenshot of the finished dashboard with numbered callouts matching steps 1–4 above, plus a downloadable .pbix "answer key". */}
+The template already has the dark page, the green panel shapes, the **OVERVIEW**, **GENRES** and **SOUND** titles, and the theme. Open the file first, then load the data into it using Part 1. You only need to add the charts.
+
+<Note>
+  The theme is applied inside the template, so you don't need to import a theme file. If a chart appears with a white background, ask your facilitator for the theme file and import it from **View** → **Themes** → **Browse for themes**.
+</Note>
+
+### Step 1: Create two helper columns
+
+A helper column is a new column we build from existing ones. Right-click the table in the **Data** pane → **New column**, and add each of these.
+
+**Explicitness.** The `explicit` column holds True/False, which looks awkward on a slicer. This turns it into readable text:
+
+```text
+Explicitness = IF('dataset'[explicit] = TRUE(), "Explicit", "Not Explicit")
+```
+
+**Genre Family.** There are 114 genres, far too many for a slicer. This groups them into 8 families:
+
+```text
+Genre Family =
+SWITCH(
+    TRUE(),
+    'dataset'[track_genre] IN {"pop", "indie-pop", "power-pop", "synth-pop", "k-pop", "j-pop", "cantopop", "mandopop", "pop-film", "j-idol"}, "Pop",
+    'dataset'[track_genre] IN {"rock", "alt-rock", "alternative", "hard-rock", "psych-rock", "punk-rock", "punk", "grunge", "emo", "goth", "industrial", "ska", "rockabilly", "rock-n-roll", "j-rock", "indie", "guitar", "metal", "heavy-metal", "black-metal", "death-metal", "metalcore", "grindcore", "hardcore"}, "Rock & Metal",
+    'dataset'[track_genre] IN {"hip-hop", "r-n-b", "soul", "funk", "groove", "trip-hop", "gospel"}, "Hip-hop & R&B",
+    'dataset'[track_genre] IN {"edm", "electro", "electronic", "dance", "club", "house", "deep-house", "chicago-house", "progressive-house", "techno", "minimal-techno", "detroit-techno", "trance", "hardstyle", "dubstep", "drum-and-bass", "breakbeat", "idm", "dub", "garage", "disco", "j-dance", "party"}, "Electronic & Dance",
+    'dataset'[track_genre] IN {"latin", "latino", "reggaeton", "salsa", "samba", "pagode", "sertanejo", "forro", "mpb", "brazil", "tango", "spanish", "reggae", "dancehall", "afrobeat", "world-music", "indian", "french", "german", "swedish", "turkish", "iranian", "malay"}, "Latin & World",
+    'dataset'[track_genre] IN {"acoustic", "ambient", "chill", "sleep", "study", "new-age", "piano", "sad", "singer-songwriter", "songwriter", "folk", "country", "bluegrass", "honky-tonk"}, "Chill & Acoustic",
+    'dataset'[track_genre] IN {"jazz", "blues", "classical", "opera", "show-tunes"}, "Jazz & Classical",
+    "Other"
+)
+```
+
+<Note>
+  If your table isn't called `dataset`, replace `'dataset'` with its name. Any genre not listed falls into **Other**.
+</Note>
+
+### Step 2: Overview panel
+
+**Three cards.** Add three **Card** visuals side by side:
+
+- **Count of** `track_id`, renamed "Tracks"
+- **Average of** `popularity` (not Sum), renamed "Avg.pop"
+- A **Viral %** measure. **Modeling** → **New measure**:
+
+```text
+Viral Share = DIVIDE(COUNTROWS(FILTER('dataset', 'dataset'[popularity] >= 58)), COUNTROWS('dataset'))
+```
+
+Format it as a percentage.
+
+**Donut chart.** Under the cards, add a **Donut chart**. **Legend:** `viral_label`. **Values:** **Count of** `track_id`. Show the labels as percentages, and set Viral to green and Not viral to grey.
+
+### Step 3: Genres panel
+
+Add a **Clustered bar chart**. **Y-axis:** `track_genre`. **X-axis:** **Average of** `popularity`. In the **Filters** pane set **Top N** to 10 by that value, and turn on **Data labels**.
+
+### Step 4: Sound panel
+
+**Energy vs Valence.** Add a **Scatter chart** with these fields:
+
+| Well | Field |
+| --- | --- |
+| **X Axis** | Average of `energy` |
+| **Y Axis** | Average of `valence` (the "happiness" of a track) |
+| **Details** | `track_genre` |
+| **Size** | Count of `track_id` |
+| **Legend** | `Genre Family` |
+| **Play Axis** | _leave empty_ |
+
+Each bubble is a **genre**, coloured by family.
+
+<Warning>
+  **Only see one bubble, with a big word floating on the chart and a play slider underneath?** A field is in the **Play Axis** well. Drag it into **Details** instead. The play axis shows one item at a time.
+</Warning>
+
+**Sound Profile.** Under the scatter plot add a **Clustered column chart**. **X-axis:** `viral_label`. **Y-axis:** add four fields, each set to **Average**: `energy`, `danceability`, `valence`, `acousticness`. This compares viral and non-viral tracks across four audio features, and it is the best evidence for your hypotheses in the next session.
+
+### Step 5: Slicers
+
+Add two **Slicers** in the framed boxes at the top of the page:
+
+- **Genre Family:** use the `Genre Family` column.
+- **Explicit:** use the `Explicitness` column, so it shows "Explicit" and "Not Explicit".
+
+<Warning>
+  For each slicer, set its **Style** to **Base** in the **Format visual** pane. The theme's slicer formatting only applies to the Base style. With any other style, the buttons keep Power BI's default look.
+</Warning>
+
+Hold **Ctrl** and click two genre families. Every visual updates, which is the point of a dashboard.
 
 <Check>
-Your dashboard should have three cards, a top-10 bar chart, a scatter plot coloured by viral/not viral, and a genre slicer that filters all of them.
+  Your dashboard should have three cards, a donut, a top-10 genre bar chart, an energy vs valence scatter plot, a sound profile column chart, and two slicers that filter everything.
 </Check>
+
+<AccordionGroup>
+  <Accordion title="A slicer or chart doesn't match the dark theme">
+    For slicers, set the **Style** to **Base**. For other visuals, check the theme is applied under **View** → **Themes**.
+  </Accordion>
+
+  <Accordion title="Numbers look huge or meaningless">
+    A field is set to **Sum**. Click its dropdown in the Fields well and choose **Average**.
+  </Accordion>
+
+  <Accordion title="Bubbles all overlap in a corner">
+    Set both scatter axes to range from 0 to 1 in **Format visual** → **X axis** / **Y axis** → **Range**.
+  </Accordion>
+</AccordionGroup>
