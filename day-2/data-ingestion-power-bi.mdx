@@ -44,7 +44,7 @@ Power Query is the **ETL** tool inside Power BI: **E**xtract, **T**ransform, **L
 
 ## Part 2: Build the dashboard
 
-You will build this dashboard in a **starter template** that your facilitator gives you.
+You will build this dashboard in a **starter template** 
 
 {/* ILLUSTRATION I-17: Screenshot of the finished dashboard (one dark page: Spotify logo, Genre Family and Explicit slicers across the top, then OVERVIEW, GENRES and SOUND panels). */}
 
@@ -120,10 +120,6 @@ Add a **Clustered bar chart**. **Y-axis:** `track_genre`. **X-axis:** **Average 
 
 Each bubble is a **genre**, coloured by family.
 
-<Warning>
-  **Only see one bubble, with a big word floating on the chart and a play slider underneath?** A field is in the **Play Axis** well. Drag it into **Details** instead. The play axis shows one item at a time.
-</Warning>
-
 **Sound Profile.** Under the scatter plot add a **Clustered column chart**. **X-axis:** `viral_label`. **Y-axis:** add four fields, each set to **Average**: `energy`, `danceability`, `valence`, `acousticness`. This compares viral and non-viral tracks across four audio features, and it is the best evidence for your hypotheses in the next session.
 
 ### Step 5: Slicers
@@ -133,26 +129,8 @@ Add two **Slicers** in the framed boxes at the top of the page:
 - **Genre Family:** use the `Genre Family` column.
 - **Explicit:** use the `Explicitness` column, so it shows "Explicit" and "Not Explicit".
 
-<Warning>
-  For each slicer, set its **Style** to **Base** in the **Format visual** pane. The theme's slicer formatting only applies to the Base style. With any other style, the buttons keep Power BI's default look.
-</Warning>
-
 Hold **Ctrl** and click two genre families. Every visual updates, which is the point of a dashboard.
 
 <Check>
   Your dashboard should have three cards, a donut, a top-10 genre bar chart, an energy vs valence scatter plot, a sound profile column chart, and two slicers that filter everything.
 </Check>
-
-<AccordionGroup>
-  <Accordion title="A slicer or chart doesn't match the dark theme">
-    For slicers, set the **Style** to **Base**. For other visuals, check the theme is applied under **View** → **Themes**.
-  </Accordion>
-
-  <Accordion title="Numbers look huge or meaningless">
-    A field is set to **Sum**. Click its dropdown in the Fields well and choose **Average**.
-  </Accordion>
-
-  <Accordion title="Bubbles all overlap in a corner">
-    Set both scatter axes to range from 0 to 1 in **Format visual** → **X axis** / **Y axis** → **Range**.
-  </Accordion>
-</AccordionGroup>
