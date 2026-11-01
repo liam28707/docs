@@ -27,13 +27,13 @@ A good hypothesis names a **feature**, a **direction** and ideally a **size**, a
   <Tab title="Weak vs strong">
     **Weak:** "Energy matters."
 
-    **Strong:** "Viral tracks cluster at high energy and mid-to-high valence in the scatter plot."
+    **Strong:** "In the sound profile chart, viral tracks have higher average danceability than non-viral ones."
   </Tab>
 </Tabs>
 
 export const HypothesisBuilder = () => {
   const features = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"];
-  const visuals = ["the scatter plot", "the genre bar chart", "the viral share card", "the genre slicer"];
+  const visuals = ["the sound profile chart", "the energy vs valence scatter plot", "the genre bar chart", "the viral share card", "the genre family slicer"];
   const [f, setF] = useState("");
   const [d, setD] = useState("");
   const [v, setV] = useState("");
@@ -86,7 +86,7 @@ export const HypothesisBuilder = () => {
 
 ### Activity 
 
-In pairs, filter to three different genres and write down **two hypotheses** about which features drive the viral label. Keep them: in the next session the model will tell you which ones were right.
+In pairs, click three different **genre families** on your slicer and write down **two hypotheses** about which features drive the viral label. Use the sound profile chart as your main evidence. Keep them: in the next session the model will tell you which ones were right.
 
 <Warning>
 **Correlation is not causation.** If viral songs have high energy, that doesn't prove that raising a song's energy makes it viral. A dashboard shows *patterns*, not *reasons*.
